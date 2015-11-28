@@ -1,3 +1,5 @@
+# Caffe on AWS
+
 The following AMI is prebuilt with Caffe: https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-763a311e
 
 Start it up with a G ec2 instance.

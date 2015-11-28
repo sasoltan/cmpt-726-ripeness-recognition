@@ -1,3 +1,7 @@
+# Extracting Features
+
+Essentially taken from http://caffe.berkeleyvision.org/gathered/examples/feature_extraction.html.
+
 Make a directory to store features:
 ```
 mkdir caffe/examples/_temp
