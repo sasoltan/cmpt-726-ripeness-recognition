@@ -1,4 +1,4 @@
-import caffe, lmdb, os, json
+import caffe, lmdb, sys
 import caffe.proto.caffe_pb2
 from caffe.io import datum_to_array
 
