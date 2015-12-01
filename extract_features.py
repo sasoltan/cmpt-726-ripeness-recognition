@@ -1,5 +1,4 @@
 import numpy, sys, os, caffe, re, time
-from os.path import join
 
 caffe_root = '../caffe/'
 caffe_model = "bvlc_alexnet"
@@ -30,7 +29,6 @@ def main():
     pic_folder = sys.argv[1]
     feature_file = sys.argv[2]
 
-    # get and load the list of images. There's only ~800 images totalling ~2.5mb so don't worry about batching
     image_list, labels = [], []
     pic_pattern = re.compile("^(\d)_(\d)+.jpg$")
     for image_file in os.listdir(pic_folder):
