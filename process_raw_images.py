@@ -23,6 +23,7 @@ def main():
                 filepath = join(full_dir, filename)
                 if isfile(filepath):
                     cropped_image = square_crop(Image.open(filepath))
+                    cropped_image.thumbnail((227, 227), Image.ANTIALIAS)
                     # rotate image four ways
                     for i in range(4):
                         out_filename = "%s_%i.jpg" % (classes.index(classdir), pic_count)
