@@ -2,6 +2,8 @@ import sys, Image
 from os import listdir
 from os.path import isfile, isdir, join
 
+image_dimensions = (256, 256)
+
 # assumes image width is greater than height
 def square_crop(image):
     width, height = image.size
@@ -23,7 +25,7 @@ def main():
                 filepath = join(full_dir, filename)
                 if isfile(filepath):
                     cropped_image = square_crop(Image.open(filepath))
-                    cropped_image.thumbnail((227, 227), Image.ANTIALIAS)
+                    cropped_image.thumbnail(image_dimensions, Image.ANTIALIAS)
                     # rotate image four ways
                     for i in range(4):
                         out_filename = "%s_%i.jpg" % (classes.index(classdir), pic_count)
