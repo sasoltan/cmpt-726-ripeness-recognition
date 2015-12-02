@@ -2,7 +2,7 @@ import numpy, sys, os, caffe, re, time
 
 caffe_root = '../caffe/'
 caffe_model = "bvlc_alexnet"
-output_layer = "fc7"
+output_layer = "fc8"
 network_dimensions = (227, 227, 3)
 
 def preflight_check(caffe_root, caffe_model):
@@ -77,15 +77,19 @@ def main():
     net = caffe.Net(proto_path, model_path, caffe.TEST)
 
     start = time.time()
-    for images in batch(image_list, 50):
+    processed = 0
+    batchsize = 50
+    for images in batch(image_list, batchsize):
         np_images = numpy.array(map(lambda i: process_image(i, mean_image), images))
 
-        net.blobs['data'].reshape(len(images),3,227,227)
-        net.blobs['data'].data[...] = np_images
-        out = net.forward()
+        #net.blobs['data'].reshape(len(images),3,227,227)
+        #net.blobs['data'].data[...] = np_images
+        #out = net.forward()
+        res = net.forward_all(data=np_images, blobs=[output_layer])
 
-        print("Processd batch. Time so far: %f" % (time.time() - start))
-        layer_outputs.append(net.blobs[output_layer].data)
+        layer_outputs.append(res[output_layer].copy())
+        processed += batchsize
+        print("Processd batch. Items so far: %i. Time so far: %f" % (processed, time.time() - start))
 
     features = numpy.concatenate(tuple(layer_outputs), axis=0)
     numpy.savez(feature_file, features=features, filenames=filenames, labels=labels)
