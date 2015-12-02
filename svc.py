@@ -1,56 +1,56 @@
 from sklearn import svm
 import sys
 import numpy as np
+import math
 
-feature_file = sys.argv[1]
+def svc(feature_file):
 
-features_files = np.load(feature_file)
-
-features = features_files['features']
-filenames = features_files['filenames']
-labels = features_files['labels']
-
-dim = labels.shape[0]
-#two labels only
-# 0 is banana, 1 is non-banana
-twoLabels = labels
-for i in xrange(0, dim):
-    if labels[i] == 1 or labels[i] == 2:
-        twoLabels[i] = 0
-    elif labels[i] == 3:
-        twoLabels[i] = 1
-
-featuresAndLabels = np.concatenate((features, twoLabels.reshape(dim, 1)), axis=1)
-allInfo = np.concatenate((featuresAndLabels, filenames.reshape(dim, 1)), axis=1)
-
-# shuffle the order of the records randomly
-# print allInfo
-# print ""
-np.random.shuffle(allInfo)
-# print allInfo
-
-#training data
-X = allInfo[0:dim-100, 0:4095]
-y = allInfo[0:dim-100, 4096]
-
-X = X.astype(np.float)
-y = y.astype(np.float)
+    features_files = np.load(feature_file)
+    features = features_files['features']
+    filenames = features_files['filenames']
+    labels = features_files['labels']
 
 
-#training the model
-clf = svm.SVC()
-clf.fit(X, y)
+    numberOfFeatures = features.shape[1]
+    numberOfRecords = labels.shape[0]
+    split = math.ceil(numberOfRecords*.33)
+    #two labels only
+    # 0 is banana, 1 is non-banana
+    twoLabels = labels
+    for i in xrange(0, numberOfRecords):
+        if labels[i] == 1 or labels[i] == 2:
+            twoLabels[i] = 0
+        elif labels[i] == 3:
+            twoLabels[i] = 1
 
-#testing
-xTest = allInfo[dim-100:dim, 0:4095].astype(np.float)
-yTest = allInfo[dim-100:dim, 4096].astype(np.float)
+    allInfo = np.concatenate((features, twoLabels.reshape(numberOfRecords, 1), filenames.reshape(numberOfRecords, 1)), axis=1)
+
+    # shuffle the order of the records randomly
+    np.random.shuffle(allInfo)
+
+    #training data
+    trainingFeatures = allInfo[0:numberOfRecords-split, 0:numberOfFeatures]
+    trainingTarget = allInfo[0:numberOfRecords-split, numberOfFeatures]
 
 
-results = clf.predict(xTest)
-print results
-print yTest
-print np.count_nonzero(results - yTest)
+    trainingFeatures = trainingFeatures.astype(np.float)
+    trainingTarget = trainingTarget.astype(np.float)
 
 
-# print xTest
-# python svmExample.py features.npz
+    #training the model
+    clf = svm.SVC()
+    clf.fit(trainingFeatures, trainingTarget)
+
+    #testing
+    testFeatures = allInfo[numberOfRecords-split:numberOfRecords, 0:numberOfFeatures].astype(np.float)
+    trainingTargetTest = allInfo[numberOfRecords-split:numberOfRecords, 4096].astype(np.float)
+
+    results = clf.predict(testFeatures)
+    print results
+    print trainingTargetTest
+    print np.count_nonzero(results - trainingTargetTest)
+
+
+if __name__ == '__main__':
+    feature_file = sys.argv[1]
+    svc(feature_file)
