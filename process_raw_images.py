@@ -16,6 +16,7 @@ def main():
 
     classes = []
     item_mapping = {}
+    unique_pic_count = 1
     for classdir in listdir(infolder):
         full_dir = join(infolder, classdir)
         if isdir(full_dir):
@@ -28,10 +29,11 @@ def main():
                     cropped_image.thumbnail(image_dimensions, Image.ANTIALIAS)
                     # rotate image four ways
                     for i in range(4):
-                        out_filename = "%s_%i.jpg" % (classes.index(classdir), pic_count)
+                        out_filename = "%s_%i_%i.jpg" % (classes.index(classdir), unique_pic_count, pic_count)
                         cropped_image.rotate(i * 90).save(join(outfolder, out_filename))
                         item_mapping[out_filename] = classes.index(classdir)
                         pic_count += 1
+                    unique_pic_count += 1
 
     class_mapping = {}
     for i, c in enumerate(classes):

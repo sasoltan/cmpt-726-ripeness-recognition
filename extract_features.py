@@ -59,7 +59,7 @@ def main():
     feature_file = sys.argv[3]
 
     image_list, labels = [], []
-    pic_pattern = re.compile("^(\d)_(\d)+.jpg$")
+    pic_pattern = re.compile("^(\d)_\d+_\d+.jpg$")
     for image_file in os.listdir(pic_folder):
         m = pic_pattern.match(image_file)
         if m:
