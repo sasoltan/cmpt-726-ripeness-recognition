@@ -40,7 +40,7 @@ def svc(feature_file):
 
 
     #training the model
-    clf = svm.SVC(C=0.001, gamma=10.0, tol=1e-16)
+    clf = svm.SVC(C=500, gamma=10.0)
     clf.fit(trainingFeatures, trainingTarget)
 
     #testing

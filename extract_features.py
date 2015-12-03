@@ -2,7 +2,6 @@ import numpy, sys, os, caffe, re, time
 
 caffe_root = '../caffe/'
 caffe_model = "bvlc_alexnet"
-output_layer = "fc8"
 network_dimensions = (227, 227, 3)
 
 def preflight_check(caffe_root, caffe_model):
@@ -55,8 +54,9 @@ def main():
     if not preflight_check(caffe_root, caffe_model):
         return False
 
-    pic_folder = sys.argv[1]
-    feature_file = sys.argv[2]
+    output_layer = sys.argv[1]
+    pic_folder = sys.argv[2]
+    feature_file = sys.argv[3]
 
     image_list, labels = [], []
     pic_pattern = re.compile("^(\d)_(\d)+.jpg$")
