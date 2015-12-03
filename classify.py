@@ -1,5 +1,5 @@
-from sklearn import svm
 import sys, numpy, test_train_split
+from sklearn import svm, cross_validation, grid_search
 
 def get_num_errors(expected_results, actual_results):
     num_test = expected_results.shape[0]
@@ -9,9 +9,22 @@ def get_num_errors(expected_results, actual_results):
         if expected_results[i] != actual_results[i]:
             total_errors += 1
     error_rate = total_errors / float(num_test)
-    return total_errors, error_rate 
+    return total_errors, error_rate
 
-def svc(feature_file):
+def optimize_params(training_features, training_target):
+    param_grid = [
+        #{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'gamma': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'kernel': ['rbf', 'linear']},
+        # result: {'kernel': 'rbf', 'C': 100, 'gamma': 10}
+        #{'C': [100, 200, 300, 400, 500, 600, 700, 800], 'gamma': [10], 'kernel': ['rbf']},
+        # result: {'kernel': 'rbf', 'C': 100, 'gamma': 10}
+        {'C': [100], 'gamma': [10], 'kernel': ['rbf', 'linear', 'poly', 'sigmoid']},
+        # result: {'kernel': 'rbf', 'C': 100, 'gamma': 10}
+    ]
+    clf = grid_search.GridSearchCV(svm.SVC(C=1), param_grid, cv=10, n_jobs=-1, verbose=3,  pre_dispatch=4)
+    clf.fit(training_features, training_target)
+    return clf.best_params_
+
+def main(feature_file, do_optimization=True):
     features_files = numpy.load(feature_file)
     features = features_files['features']
     filenames = features_files['filenames']
@@ -31,6 +44,13 @@ def svc(feature_file):
     train_features = numpy.array(train_features).astype(numpy.float)
     train_targets = numpy.array(train_targets).astype(numpy.float)
 
+    # get parameters for classification
+    if do_optimization:
+        classification_params = optimize_params(train_features, train_targets)
+        print "Optimized params: %s" % (str(classification_params))
+    else:
+        classification_params = {"C": 100, "gamma": 10.0}
+
     # test data
     test_features, test_targets = [], []
     for test_index in test_indices:
@@ -40,7 +60,7 @@ def svc(feature_file):
     test_targets = numpy.array(test_targets).astype(numpy.float)
 
     #training the model
-    clf = svm.SVC(C=500, gamma=10.0)
+    clf = svm.SVC(**classification_params)
     clf.fit(train_features, train_targets)
 
     # check testing error
@@ -55,4 +75,5 @@ def svc(feature_file):
 
 if __name__ == '__main__':
     feature_file = sys.argv[1]
-    svc(feature_file)
+    do_optimization = sys.argv[2] != "noop" if len(sys.argv) >= 3 else True
+    main(feature_file, do_optimization=do_optimization)
