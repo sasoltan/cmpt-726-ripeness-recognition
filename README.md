@@ -22,6 +22,6 @@ First command is where to get the features from the neural net. Second is direct
 
 To run classification on the extracted features call:
 ```
-python svc.py features_fc8.npz
+python svc.py extracted_features/features_fc8.npz
 ```
 The file you pass in is the features from the previous step (or use one of the pre-extracted ones in ```extracted_features/```).
