@@ -1,13 +1,48 @@
 import sys, numpy, test_train_split
 from sklearn import svm, cross_validation, grid_search
 
-def get_num_errors(expected_results, actual_results):
-    num_test = expected_results.shape[0]
+BANANA_CLASS = [0, 1, 2]
+NONBANANA_CLASS = [3]
+
+def get_num_errors(predicted_results, actual_results, filenames=None, print_failed=False, print_additional=False):
+    num_test = predicted_results.shape[0]
     total_errors = 0
+    banana = [0, 0]
+    ripe = [0, 0]
+    non_banana = [0, 0]
+    fail = []
     for i in range(num_test):
-        expected, actual = expected_results[i], actual_results[i]
-        if expected_results[i] != actual_results[i]:
+        expected, actual = predicted_results[i], actual_results[i]
+        if predicted_results[i] != actual_results[i]:
             total_errors += 1
+            if filenames:
+                fail.append("%s %i" % (filenames[i], predicted_results[i]))
+
+        if actual_results[i] in BANANA_CLASS:
+            banana[1] += 1
+            if predicted_results[i] in BANANA_CLASS:
+                banana[0] += 1
+
+        if actual_results[i] in BANANA_CLASS and predicted_results[i] in BANANA_CLASS:
+            ripe[1] += 1
+            if predicted_results[i] == actual_results[i]:
+                ripe[0] += 1
+
+        if actual_results[i] in NONBANANA_CLASS:
+            non_banana[1] += 1
+            if predicted_results[i] in NONBANANA_CLASS:
+                non_banana[0] += 1
+
+
+    if print_additional:
+        print("Percent of bananas correctly classified as a banana: %f" % (banana[0] / float(banana[1])))
+        print("Percent of bananas classified as banas, percent correctly predicted ripeness: %f" % (ripe[0] / float(ripe[1])))
+        print("Percent of other correctly classified as others: %f" % (non_banana[0] / float(non_banana[1])))
+
+    if print_failed:
+        for f in sorted(fail):
+            print f
+
     error_rate = total_errors / float(num_test)
     return total_errors, error_rate
 
@@ -52,10 +87,11 @@ def main(feature_file, do_optimization=True):
         classification_params = {"C": 100, "gamma": 10.0}
 
     # test data
-    test_features, test_targets = [], []
+    test_features, test_targets, test_filenames = [], [], []
     for test_index in test_indices:
         test_features.append(all_info[test_index, 0:num_features])
         test_targets.append(all_info[test_index, num_features])
+        test_filenames.append(all_info[test_index, num_features+1])
     test_features = numpy.array(test_features).astype(numpy.float)
     test_targets = numpy.array(test_targets).astype(numpy.float)
 
@@ -69,7 +105,7 @@ def main(feature_file, do_optimization=True):
     print "Training: Number of errors: %i. Error rate: %f." % (total_errors, error_rate)
     # check training error
     test_results = clf.predict(test_features)
-    total_errors, error_rate = get_num_errors(test_results, test_targets)
+    total_errors, error_rate = get_num_errors(test_results, test_targets, filenames=test_filenames, print_failed=False, print_additional=True)
     print "Testing: Number of errors: %i. Error rate: %f." % (total_errors, error_rate)
 
 
