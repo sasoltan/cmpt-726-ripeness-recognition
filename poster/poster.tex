@@ -13,7 +13,7 @@
 \documentclass[final]{beamer}
 \usepackage{etex}
 
-\usepackage[scale=1.2]{beamerposter} 
+\usepackage[scale=1.25]{beamerposter} 
 \newcommand{\diag}{\mbox{{\rm diag}}}
 \usepackage[labelformat=simple]{subcaption}
 \renewcommand\thesubfigure{(\alph{subfigure})}
@@ -101,7 +101,7 @@
 %-----------------------------------------------------------
 % Start the poster itself
 %-----------------------------------------------------------
-
+\usepackage{gensymb}
 \begin{document}
 \begin{frame}[t]
   \begin{columns}[t]												% the [t] option aligns the column's content at the top
@@ -113,10 +113,15 @@
       %\vskip2ex
 \begin{block}{Introduction}
 \begin{itemize}
-\item Motivated by study by~\citet{saad2009recognizing}.
+\item Interested in classifying fruit ripeness using machine learning methods. 
+\item Previously studied by~\citet{saad2009recognizing} through neural network methods. 
+\item More than just bananas: Aim to improve upon previous work by incorporating non-banana objects. 
+\item Previous data set unavailable; will establish our own data set. 
+
 \end{itemize}
- 
-\begin{alertblock}{Data Collection }
+\end{block} %introduction block
+            \vskip2ex
+\begin{alertblock}{Data Collection}
 \begin{itemize}
 \item Generated the data set by taking pictures of bananas and objects that are not bananas.
 \item Lighting, camera (Canon S90) and background were controlled. 
@@ -127,77 +132,35 @@
 \item rotten. 
 \end{enumerate}
 \item Used green pepper, apple, tomato, lemon and lime as non-banana objects. 
-\item Pictures were resized and cropped. 
-\item To minimize the number of pictures taken, 
+\item Pictures were resized and cropped to a square. 
+\item Incorporated each picture at $0\,^{\circ}$, $90\,^{\circ}$, $180\,^{\circ}$ and  $270\,^{\circ}$ of rotation to increase the number of pictures in the data set by four fold.
 \end{itemize}
+\end{alertblock}
+ \vskip1ex
  \begin{figure}
   \begin{subfigure}{.28\textwidth}
   \centering
-\includegraphics[width=\textwidth]{FullChip.jpg}
+\includegraphics[width=\textwidth]{1_preripe.jpg}
 \caption{}
-\label{fig:gyroscopeChip}
+\label{fig;preripe}
 \end{subfigure}%
-\def\radius {4cm}
-\def\margin{15}
-\def \n {5}
-\def \margin {15} 
-  \tikzstyle{cell}=[circle,thick,draw=black,fill=red!20,minimum size=9mm]
-  \begin{subfigure}{.325\textwidth}
+\quad
+ \begin{subfigure}{.28\textwidth}
   \centering
-\begin{tikzpicture}
-
-  \node[cell] (1) at ({360/5 * (1 - 1)}:\radius) {$1$};
-  \node[cell] (2) at ({360/5 * (2 - 1)}:\radius) {$2$};
-  \node[cell] (3) at ({360/5 * (3 - 1)}:\radius) {$3$};
-  \node[] (4) at ({360/5 * (4 - 1)}:\radius) {$\dots$};
-  \node[cell] (n) at ({360/5 * (5 - 1)}:\radius) {$n$};
-  
-
- \foreach \s in {1,...,\n}
-{
- \draw[-{Latex[length=5mm,width=2mm,angle'=90]}, very thick] ({360/\n * (\s - 1)+\margin}:\radius) 
-    arc ({360/\n * (\s - 1)+\margin}:{360/\n * (\s)-\margin}:\radius);
-}
-\end{tikzpicture}
-
+\includegraphics[width=\textwidth]{2_ripe.jpg}
 \caption{}
-\label{fig:UniDirectionalRing}
+\label{fig:ripe}
 \end{subfigure}%
-  \begin{subfigure}{.325\textwidth}
+\quad
+  \begin{subfigure}{.28\textwidth}
   \centering
-\begin{tikzpicture}
-
-  \node[cell] (1) at ({360/5 * (1 - 1)}:\radius) {$1$};
-  \node[cell] (2) at ({360/5 * (2 - 1)}:\radius) {$2$};
-  \node[cell] (3) at ({360/5 * (3 - 1)}:\radius) {$3$};
-  \node[] (4) at ({360/5 * (4 - 1)}:\radius) {$\dots$};
-  \node[cell] (n) at ({360/5 * (5 - 1)}:\radius) {$n$};
-  
-
- \foreach \s in {1,...,\n}
-{
- \draw[{Latex[length=5mm,width=2mm,angle'=90]}-{Latex[length=5mm,width=2mm,angle'=90]}, very thick] ({360/\n * (\s - 1)+\margin}:\radius) 
-    arc ({360/\n * (\s - 1)+\margin}:{360/\n * (\s)-\margin}:\radius);
-}
-\end{tikzpicture}
-  \caption{}
-\label{fig:biDirectionalRing}
-
+\includegraphics[width=\textwidth]{0_overripe.jpg}
+\caption{}
+\label{fig:overripe}
 \end{subfigure}%
-\caption{  (a) Nine MEMS gyroscopes on a chip. (b) Unidirectionally coupled ring. (c) Bidirectionally coupled ring}
+\caption{  (a) Pre-ripe banana. (b) Ripe banana. (c) Overripe banana.}
 \end{figure}
-\end{alertblock}
-
- This result implies that, when coupling Hamiltonian subsystems with identical coupling functions, the coupling topology alone could determined whether the coupled system remains Hamiltonian. Arising naturally from the aforementioned result, we have the following question: 
- \vskip1ex
-\begin{alertblock}{Question on Topology and Coupled Hamiltonian Systems}
-
- \end{alertblock}
-
-
-      \end{block}
-            \vskip2ex
-      \end{column}
+\end{column}
 
     \begin{column}{\sepwid}\end{column}			% empty spacer column
 
@@ -205,57 +168,27 @@
         \begin{column}{\onecolwid}
 
           
-          \begin{block}{Hamiltonian Coupled Cell System}
-          For the purpose of this work, a Hamiltonian coupled cell system is a Hamiltonian differential system that satisfies the definition of a coupled cell system as defined by~\citet{krizhevsky2012imagenet}.  As such, each cell is a system of differential equations with phase variable $x_i\in\mathbb{R}^{k_i}$, for $i\in\{1,\ldots, n\}$. Suppose that cell $i$ receives input from cells $j_1,\ldots,j_{m_i}\in\{1,\ldots,n\}$, then the dynamics of the $i^{th}$ component is
-\begin{equation*}
-\frac{dx_i}{dt}=g_i(x_i)+h_i(x_{j_1},\ldots,x_{j_{m_i}}),
-\end{equation*}
-where $g_i$ and $h_i$ represent the internal and coupling dynamics, respectively.  Then, at the linear level, the matrices for the internal and coupling dynamics can be written as
-\begin{equation*}\label{eq:internalAndCouplingMatrices}
-\left.\frac{\partial g_i}{\partial x_i}\right|_{x=0}=Q_i\,\,\,\mbox{and }\,\,\left.\frac{\partial h_i}{\partial x_j}\right |_{x=0}=R_{ij},
-\end{equation*} where $x=(x_1,\ldots,x_n)^T$, $Q_i\in\mathbb{R}^{k_i\times k_i}$, and $R_{ij}\in\mathbb{R}^{k_i\times k_j}$.  Let $0_{l}$ and $I_{l}$ denote the $l\times l$ zero and identity matrices, respectively. Then the general skew symmetric matrix $J$ can be written as
-\begin{equation*}
-J=\operatorname{diag}\left(J_1,\ldots, J_n\right) \mbox{, where } \ell_i=k_i/2 \mbox{ and }J_{i}=
-\left[\begin{array}{cc}
-0_{\ell_i}&I_{\ell_i}\\
--I_{\ell_i}&0_{\ell_i}
-\end{array}\right].
-\end{equation*}
-Based on these definitions, we can state the linear criteria for coupling Hamiltonian subsystems. 
-          \end{block}
+ \begin{block}{Tools and Methods}
+ \begin{itemize}
+ \item Install caffe.
+ \item Use AlexNet.
+ \item Used SciKi
+ \end{itemize}
+ 
+ 
+  \end{block} %tools and methods block
          
 %         \begin{theorem}\label{linearHamiltonianTheorem}
 \vskip1ex
 
-         \begin{alertblock}{General Linear Criteria}
-Suppose we have a connected coupled cell system. Let the functions for the internal dynamics be Hamiltonian. Then, the linearized system at the origin is Hamiltonian if and only if  
-\begin{align*}\label{eq:topologicalCondition}
-&&&&R_{ji}^TJ_{l_j}+J_{l_i}R_{ij}&=0,&\mbox{for}\;\;1\leq i,j\leq n.
-\end{align*} 
-%\end{theorem}
+\begin{alertblock}{Features Extraction via AlexNet}
 \end{alertblock}
 \vskip1ex
 
-\begin{block}{Regular Hamiltonian Coupled Cell Systems}
-        A system is called \emph{homogenous} if all the nodes are of the same type and a homogenous system with identical couplings is a \emph{regular} system. We may represent the topology of these systems graphically using digraphs. The \emph{adjacency matrix} $A(G)$ associated with a directed graph $G$ is the integer matrix with rows and columns indexed by vertices of $G$, such that the  $A(G)[i,j]$ is equal to the number of arcs from cell $i$ to cell $j$.%~\citep{godsil2001algebraic}. %A digraph is symmetric if  for every edge $(i,j)$ there is also an edge $(j,i)$. 
-\begin{alertblock}{Criteria for Regular Hamiltonian Systems}
-For a regular coupled cell system, the linearized system at the origin is Hamiltonian if and only if the adjacency matrix of the digraph associated with the coupled cell system is symmetric. 
-\end{alertblock}
-
-        
-        
-        
-        %Under the homogenous assumption, we may expressed the linearized internal dynamics of each cell as $\mathcal Q=Q_i$. Suppose the a digraph of a homogenous coupled has adjacency matrix $A$, then the Jacobian matrix of a homogenous system with identical couplings can be written as
-%\begin{equation*}\label{eq:homogenousIdenticalJacobian}
-%\mathcal M=I_n\otimes \mathcal Q+A\otimes \mathcal R.
-%\end{equation*} 
-
+\begin{block}{Experimental Results}
+      
 \end{block}
-
-
-
-
-            \end{column}
+ \end{column}
   \begin{column}{\sepwid}\end{column}			% empty spacer column        
   
         \begin{column}{\onecolwid}
@@ -272,29 +205,10 @@ Suppose that a coupled cell system is Hamiltonian and the associated digraph is 
 \end{alertblock}
 Based on all aforementioned criteria, the digraph in Figure~\ref{fig:example1} is a nontrivial  example that would admit a general nonlinear Hamiltonian coupled cell system.  
 \end{block}
-\begin{figure}[htb]
-\begin{center}
-\begin{tikzpicture}[node distance=10cm]
-%styles for nodes
-\tikzstyle{circleCell}=[circle,thick,draw=black!75,,minimum size=40mm]
-\tikzstyle{squareCell}=[rectangle,thick,draw=black!75,,minimum size=35mm]
-%drawing nodes
-\node [circleCell] (c1) {$v_1$};
-\node [squareCell] (c2) [right of=c1]{$v_2$};
-%drawing edges
-\draw (c1) edge [-{Square[length=7mm,width=7mm]}, in=-155,out=-25,line width=1pt,below] node {$e_2$} (c2);
-\draw (c2) edge [-{Latex[length=6mm,width=2mm,angle'=90]},in=25,out=155,line width=1pt,above] node {$e_1$} (c1);
-\end{tikzpicture}
-\end{center}
-%\caption{A digraph representing System~\eqref{eq:exampleSystem} as a coupled cell system.}
-\caption{Example of a digraph representing a Hamiltonian coupled cell system.}
-\label{fig:example1}
-\end{figure}
-
 \begin{block}{Conclusion and Future Work}
 As shown by the example from the gyroscopic system, we found that, when coupling Hamiltonian subsystems together, not all topological configurations will allow the overall system to remain Hamiltonian. Motivated by this counterintuitive example, we showed that there are linear and nonlinear criteria to consider in coupling Hamiltonian systems. 
 %These results allow us to construct Hamiltonian coupled cell systems by coupling Hamiltonian subsystems. 
-Hence, we are now ready to construct general Hamiltonian systems and  investigate their dynamics. Currently, we are investigating the generic codimension-one bifurcations that could arise from Hamiltonian coupled cell systems. %Aside from ensuring that coupling Hamiltonian subsystems remain Hamiltonian, we are also interested using topology and coupling to construct a Hamiltonian system from non-Hamiltonian subsystems.  
+Hence, we are now ready to construct general Hamiltonian systems and  investigate their dynamics. Currently, we are investigating the generic codimension-one bifurcations that could arise from Hamiltonian coupled cell systems. 
 \end{block}
 %\vskip1ex
 \begin{block}{Acknowledgement}
