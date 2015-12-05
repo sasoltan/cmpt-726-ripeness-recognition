@@ -1,8 +1,13 @@
-import sys, numpy, test_train_split
+import sys, numpy, test_train_split, ast
 from sklearn import svm, cross_validation, grid_search
 
 BANANA_CLASS = [0, 1, 2]
 NONBANANA_CLASS = [3]
+
+# MODES:
+#   op -> optimization. Will optimize the params on the classifier
+#   test -> will train classifier on train and then run on test data
+#    -> (default) run train with pre-computed params, nothing else 
 
 def get_num_errors(predicted_results, actual_results, filenames=None, print_failed=False, print_additional=False):
     num_test = predicted_results.shape[0]
@@ -47,19 +52,19 @@ def get_num_errors(predicted_results, actual_results, filenames=None, print_fail
     return total_errors, error_rate
 
 def optimize_params(training_features, training_target):
-    param_grid = [
-        #{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'gamma': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'kernel': ['rbf', 'linear']},
-        # result: {'kernel': 'rbf', 'C': 100, 'gamma': 10}
-        #{'C': [100, 200, 300, 400, 500, 600, 700, 800], 'gamma': [10], 'kernel': ['rbf']},
-        # result: {'kernel': 'rbf', 'C': 100, 'gamma': 10}
-        {'C': [100], 'gamma': [10], 'kernel': ['rbf', 'linear', 'poly', 'sigmoid']},
-        # result: {'kernel': 'rbf', 'C': 100, 'gamma': 10}
+    param_grids = [
+        [{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'gamma': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'kernel': ['rbf']}],
+        [{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'kernel': ['linear']}],
+        [{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'gamma': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'kernel': ['sigmoid']}],
+        [{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'gamma': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'degrea': [1, 2], 'kernel': ['poly']}],
     ]
-    clf = grid_search.GridSearchCV(svm.SVC(C=1), param_grid, cv=10, n_jobs=-1, verbose=3,  pre_dispatch=4)
-    clf.fit(training_features, training_target)
-    return clf.best_params_
+    for param_grid in param_grids:
+        clf = grid_search.GridSearchCV(svm.SVC(C=1), param_grid, cv=10, n_jobs=-1, verbose=1,  pre_dispatch=4)
+        clf.fit(training_features, training_target)
+        print clf.best_params_
+    return True
 
-def main(feature_file, do_optimization=True):
+def main(feature_file, split_file, mode=""):
     features_files = numpy.load(feature_file)
     features = features_files['features']
     filenames = features_files['filenames']
@@ -69,7 +74,11 @@ def main(feature_file, do_optimization=True):
     all_info = numpy.concatenate((features, labels.reshape(num_records, 1), filenames.reshape(num_records, 1)), axis=1)
 
     # split train/test
-    train_indices, test_indices = test_train_split.split(filenames)
+    temp_split = {}
+    with open(split_file) as input_file:
+        temp_split = ast.literal_eval(input_file.read())
+
+    train_indices, test_indices = temp_split["train"], temp_split["test"]
 
     # training data
     train_features, train_targets = [], []
@@ -80,11 +89,12 @@ def main(feature_file, do_optimization=True):
     train_targets = numpy.array(train_targets).astype(numpy.float)
 
     # get parameters for classification
-    if do_optimization:
+    if mode == "op":
         classification_params = optimize_params(train_features, train_targets)
-        print "Optimized params: %s" % (str(classification_params))
+        return True
+        #print "Optimized params: %s" % (str(classification_params))
     else:
-        classification_params = {"C": 100, "gamma": 10.0}
+        classification_params = {"C": 100, "gamma": 10.0, "kernel": "poly", "degree": 2}
 
     # test data
     test_features, test_targets, test_filenames = [], [], []
@@ -103,13 +113,16 @@ def main(feature_file, do_optimization=True):
     train_results = clf.predict(train_features)
     total_errors, error_rate = get_num_errors(train_results, train_targets)
     print "Training: Number of errors: %i. Error rate: %f." % (total_errors, error_rate)
-    # check training error
-    test_results = clf.predict(test_features)
-    total_errors, error_rate = get_num_errors(test_results, test_targets, filenames=test_filenames, print_failed=False, print_additional=True)
-    print "Testing: Number of errors: %i. Error rate: %f." % (total_errors, error_rate)
+
+    if mode == "test":
+        # check training error
+        test_results = clf.predict(test_features)
+        total_errors, error_rate = get_num_errors(test_results, test_targets, filenames=test_filenames, print_failed=False, print_additional=True)
+        print "Testing: Number of errors: %i. Error rate: %f." % (total_errors, error_rate)
 
 
 if __name__ == '__main__':
     feature_file = sys.argv[1]
-    do_optimization = sys.argv[2] != "noop" if len(sys.argv) >= 3 else True
-    main(feature_file, do_optimization=do_optimization)
+    split_file = sys.argv[2]
+    mode = sys.argv[3] if len(sys.argv) >= 4 else ""
+    main(feature_file, split_file, mode=mode)
