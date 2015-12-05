@@ -1,6 +1,6 @@
 import sys, numpy, test_train_split, ast
 from sklearn import svm, cross_validation, grid_search
-
+from sklearn.decomposition import PCA, KernelPCA, RandomizedPCA
 BANANA_CLASS = [0, 1, 2]
 NONBANANA_CLASS = [3]
 
@@ -64,6 +64,14 @@ def optimize_params(training_features, training_target):
         print clf.best_params_
     return True
 
+	def PCA_selection(training_features):
+    #scikit_kpca = KernelPCA(n_components=1, kernel='rbf', gamma=20.0)
+    #X_skernpca = scikit_kpca.fit_transform(training_features)
+    n_components = 3
+    pca = RandomizedPCA(n_components=n_components, whiten=True).fit(training_features)
+    features_all = pca.transform(training_features)
+    return features_all
+	
 def main(feature_file, split_file, mode=""):
     features_files = numpy.load(feature_file)
     features = features_files['features']
@@ -105,6 +113,10 @@ def main(feature_file, split_file, mode=""):
     test_features = numpy.array(test_features).astype(numpy.float)
     test_targets = numpy.array(test_targets).astype(numpy.float)
 
+	# PCA optimzation
+    #train_features = PCA_selection(train_features)
+    #test_features  = PCA_selection(test_features)
+	
     #training the model
     clf = svm.SVC(**classification_params)
     clf.fit(train_features, train_targets)
