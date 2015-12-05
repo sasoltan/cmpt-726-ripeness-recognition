@@ -30,8 +30,15 @@ def split(filenames):
 
 if __name__ == "__main__":
     feature_file = sys.argv[1]
+    out_file = sys.argv[2]
+
     features_files = numpy.load(feature_file)
     filenames = features_files['filenames']
-    train, test = generate_indices(filenames)
+    train, test = split(filenames)
+
+    split = { "train": train, "test": test }
+    with open(out_file, 'w') as output_file:
+        output_file.write(str(split))
+
     print train
     print test
