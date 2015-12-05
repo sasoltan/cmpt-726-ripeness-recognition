@@ -1,0 +1,1 @@
+{0: 'banana_rotten', 1: 'banana_preripe', 2: 'banana_ripe', 3: 'nonbanana'}
