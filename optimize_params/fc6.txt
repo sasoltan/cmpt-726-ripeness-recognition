@@ -1,0 +1,16 @@
+Fitting 10 folds for each of 12 candidates, totalling 120 fits
+[Parallel(n_jobs=-1)]: Done  47 tasks      | elapsed:   30.0s
+[Parallel(n_jobs=-1)]: Done 120 out of 120 | elapsed:  1.2min finished
+{'kernel': 'rbf', 'C': 1000, 'gamma': 1}
+Fitting 10 folds for each of 5 candidates, totalling 50 fits
+[Parallel(n_jobs=-1)]: Done  47 tasks      | elapsed:   28.7s
+[Parallel(n_jobs=-1)]: Done  50 out of  50 | elapsed:   30.1s finished
+{'kernel': 'linear', 'C': 100}
+Fitting 10 folds for each of 9 candidates, totalling 90 fits
+[Parallel(n_jobs=-1)]: Done  47 tasks      | elapsed:   52.7s
+[Parallel(n_jobs=-1)]: Done  90 out of  90 | elapsed:  1.7min finished
+{'kernel': 'sigmoid', 'C': 0.0001, 'gamma': 0.0001}
+Fitting 10 folds for each of 18 candidates, totalling 180 fits
+[Parallel(n_jobs=-1)]: Done  47 tasks      | elapsed:   28.9s
+[Parallel(n_jobs=-1)]: Done 180 out of 180 | elapsed:  1.6min finished
+{'kernel': 'poly', 'C': 10, 'gamma': 10, 'degree': 1}
