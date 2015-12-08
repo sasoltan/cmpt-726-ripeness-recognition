@@ -1,42 +1,36 @@
 \documentclass{article} % For LaTeX2e
 \usepackage{nips15submit_e,times}
 \usepackage{hyperref}
-\usepackage{url}
-%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
-
-
-\title{Formatting Instructions for NIPS 2015}
-
+\usepackage{verbatim}\usepackage{url}
+\usepackage{natbib}
+\usepackage[labelformat=simple]{subcaption}
+\renewcommand\thesubfigure{(\alph{subfigure})}
+\usepackage{pgfplots, graphicx, amsmath,amsthm,amssymb,mathtools,   natbib,tikz}
+\usetikzlibrary{arrows.meta, shadows, arrows, positioning}
+\usepackage{color}
+\definecolor{SFUred} {RGB}{131,33,37}
+\title{A Neural Network Approach to Classifying Banana Ripeness}
 
 \author{
-David S.~Hippocampus\thanks{ Use footnote for providing further information
-about author (webpage, alternative address)---\emph{not} for acknowledging
-funding agencies.} \\
-Department of Computer Science\\
-Cranberry-Lemon University\\
-Pittsburgh, PA 15213 \\
-\texttt{hippo@cs.cranberry-lemon.edu} \\
+Kyle Demeule\\
+Department of Computing Science\\
+Faculty of Applied Sciences\\
+Simon Fraser University\\
+8888 University Drive\\
+\texttt{kdd2@sfu.ca} \\
 \And
-Coauthor \\
-Affiliation \\
-Address \\
-\texttt{email} \\
+Bernard S Chan \\
+Department of Computing Science\\
+Faculty of Applied Sciences\\
+Simon Fraser University\\
+8888 University Drive\\
+\texttt{bernardc@sfu.ca} \\
 \AND
-Coauthor \\
-Affiliation \\
-Address \\
-\texttt{email} \\
-\And
-Coauthor \\
-Affiliation \\
-Address \\
-\texttt{email} \\
-\And
-Coauthor \\
-Affiliation \\
-Address \\
-\texttt{email} \\
-(if needed)\\
+Saeed Soltani\\
+Department of Computing Science\\Faculty of Applied Sciences\\
+Simon Fraser University\\
+8888 University Drive\\
+\texttt{saeeds@sfu.ca} \\
 }
 
 % The \author macro works with any number of authors. There are two commands
@@ -50,7 +44,7 @@ Address \\
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
 
-%\nipsfinalcopy % Uncomment for camera-ready version
+\nipsfinalcopy % Uncomment for camera-ready version
 
 \begin{document}
 
@@ -58,398 +52,223 @@ Address \\
 \maketitle
 
 \begin{abstract}
-The abstract paragraph should be indented 1/2~inch (3~picas) on both left and
-right-hand margins. Use 10~point type, with a vertical spacing of 11~points.
-The word \textbf{Abstract} must be centered, bold, and in point size 12. Two
-line spaces precede the abstract. The abstract must be limited to one
-paragraph.
-\end{abstract}
+In this paper, a new technique to detect the banana and its ripeness is introduced. This paper includes the methods and experiments that were implemented in the project. Some of the techniques that were used in this project includes classifying images by support vector machines in linear, radial basis functions and sigmoid functions. Also, we explain the optimization methods that used to improve the accuracy and decrease the number of features.\end{abstract}
 
-\section{Submission of papers to NIPS 2015}
+\section{Introduction}
 
-NIPS requires electronic submissions.  The electronic submission site is  
-\begin{center}
-   \url{http://papers.nips.cc}
-\end{center}
+Detecting the ripeness of fruits has always been a subjective issue depending on our senses visualization and experience of individuals. In recent years, with advancement of technology, some researchers determined to challenge this issue by studying the differences between ripe and unripe fruits. They concluded that, the level of ripeness of most fruits could be detected based on the colour of fruit?s skin. Therefore, this problem became an image processing task. 
 
-Please read carefully the
-instructions below, and follow them faithfully.
-\subsection{Style}
+There has been a few studies in past couple of years to tackle this issue by using various image segmentation and detection methods. In 2012,~\citet{dadwal2012color} applied color image segmentation methods to RGB color space pictures to estimate the ripeness. Classification of RGB colours separately and predict the ripeness based on the mean values of those colors were implemented in their algorithm. However, their approach was not adaptive to some ranges as some of the values overlapped in RGB regions. More specifically,~\citet{paulraj2009color} proposed a new method for detecting the ripeness banana by using Neural network model. He derived that by using the histograms that were obtained from banana pictures as a feature vector and sending that as an input to neural networks, it could classify the imported banana as ripe or unripe. The ripeness recognition rate for his algorithm is 96\%. However, this model does not distinguish the non-banana from banana and would only predict the ripeness. In this project, our aim was to implement a new method that could firstly detect whether the imported picture contains any banana and secondly detect the ripeness of banana based on the its skin color. Our approach to this issue is to perform feature extraction of images by using convolutional neural networks and constructing support vector machine classification model that could classify an object by detecting whether it is banana or non-banana and recognize the ripeness, if it is a banana. This model could be very helpful in helping disabled people to detect the ripeness of bananas. In addition, it could become handy in industry for large scale sorting. 
+\section {Background}
+\begin{itemize}
+\item literuatre review on fruit ripeness
+\item literature review on neural network, deep learning, AlexNet
+\item introduction to technolgies used (Caffe, ScikitLearn)
+\end{itemize}
+\section{Methodology}
+For this project, we created our own data set on banana and non-banana objects because the previous data sets from~\citet{saad2009recognizing} and~\citet{paulraj2009color} were not available. After establishing our own data set, we extracted the features of the images using a pre-trained convolution neural network. The Caffe deep learning frame work by~\citet{jia2014caffe} allowed us to access from many existing models. Given that we have a visualization task with different types of objects, we chose AlexNet by~\citet{krizhevsky2012imagenet} to extract the features. After obtaining the features of the images, we used the SVM library provided in SciKit Learn~\citep{scikit-learn} to classify the objects. A workflow of this project is shown as a flowchart in Figure~\ref{fig:flowchart}. In this section, we will discuss the details in each step of our work. 
 
-Papers to be submitted to NIPS 2015 must be prepared according to the
-instructions presented here. Papers may be only up to eight pages long,
-including figures. Since 2009 an additional ninth page \textit{containing only
-cited references} is allowed. Papers that exceed nine pages will not be
-reviewed, or in any other way considered for presentation at the conference.
-%This is a strict upper bound. 
+\tikzstyle{block} = [rectangle, draw, fill=SFUred!20, 
+    text width=30em, text centered, rounded corners, minimum height=2em]
+    \tikzstyle{small} = [rectangle, draw, fill=white!20, 
+    text width=5em, text centered, rounded corners, minimum height=2em]
+        \tikzstyle{medium} = [rectangle, draw, fill=white!20, 
+    text width=8em, text centered, rounded corners, minimum height=2em]
 
-Please note that this year we have introduced automatic line number generation
-into the style file (for \LaTeXe and Word versions). This is to help reviewers
-refer to specific lines of the paper when they make their comments. Please do
-NOT refer to these line numbers in your paper as they will be removed from the
-style file for the final version of accepted papers.
+\tikzstyle{line} = [draw, -latex']
 
-The margins in 2015 are the same as since 2007, which allow for $\approx 15\%$
-more words in the paper compared to earlier years. We are also again using 
-double-blind reviewing. Both of these require the use of new style files.
+\begin{figure} [h]
+\centering 
+{
+\begin{tikzpicture}[node distance = 1.2cm, auto,scale=.1]
+    % Place nodes
+    \node [block] (capture) {Capture images};
+    \node [block, below of=capture] (process) {Label and process images (crop, resize and convert to RGB)};
+%    \node [block, below of=process] (convert) {Convert to RGB };
+    \node [block, below of= process] (cnn) {Extract features via CNN (Caffe and AlexNet)};
+    \node [block, below of=cnn] (svm) {Classify data via SVM (SciKit Learn)};
+    \node [medium, below left = 1cm and -10cm of svm] (nonbanana) {Non-Banana};
+    \node [small, below right = 1.cm and -10 cm of svm] (banana) {Banana};
+    \node [small, below of = banana] (ripe) {Ripe};
+    \node [small, below left = . cm and .9 cm of banana] (unripe) {Unripe};
+     \node [small, below right = .cm and .9 cm of banana] (overripe) {Overripe};
 
-Authors are required to use the NIPS \LaTeX{} style files obtainable at the
-NIPS website as indicated below. Please make sure you use the current files and
-not previous versions. Tweaking the style files may be grounds for rejection.
-
-%% \subsection{Double-blind reviewing}
-
-%% This year we are doing double-blind reviewing: the reviewers will not know 
-%% who the authors of the paper are. For submission, the NIPS style file will 
-%% automatically anonymize the author list at the beginning of the paper.
-
-%% Please write your paper in such a way to preserve anonymity. Refer to
-%% previous work by the author(s) in the third person, rather than first
-%% person. Do not provide Web links to supporting material at an identifiable
-%% web site.
-
-%%\subsection{Electronic submission}
-%%
-%% \textbf{THE SUBMISSION DEADLINE IS June 5, 2015. SUBMISSIONS MUST BE LOGGED BY
-%% 23:00, June 5, 2015, UNIVERSAL TIME}
-
-%% You must enter your submission in the electronic submission form available at
-%% the NIPS website listed above. You will be asked to enter paper title, name of
-%% all authors, keyword(s), and data about the contact
-%% author (name, full address, telephone, fax, and email). You will need to
-%% upload an electronic (postscript or pdf) version of your paper.
-
-%% You can upload more than one version of your paper, until the
-%% submission deadline. We strongly recommended uploading your paper in
-%% advance of the deadline, so you can avoid last-minute server congestion.
-%%
-%% Note that your submission is only valid if you get an e-mail
-%% confirmation from the server. If you do not get such an e-mail, please
-%% try uploading again. 
+    % Draw edges
+    \path [line] (capture) -- (process);
+    \path [line] (process) -- (cnn);
+%    \path [line] (convert)--(cnn);
+    \path [line] (cnn)--(svm);
+    \path [line] (svm)--(nonbanana);
+        \path [line] (svm)--(banana);
+          \path [line] (banana)--(unripe);
+        \path [line] (banana)--(overripe);
+	\path [line] (banana)--(ripe);
+\end{tikzpicture}
+}
+\caption{A flow chart of project development.}
+\label{fig:flowchart}
+ \end{figure}
 
 
-\subsection{Retrieval of style files}
+\subsection{Generating and Preparing the Data set}
 
-The style files for NIPS and other conference information are available on the World Wide Web at
-\begin{center}
-   \url{http://www.nips.cc/}
-\end{center}
-The file \verb+nips2015.pdf+ contains these 
-instructions and illustrates the
-various formatting requirements your NIPS paper must satisfy. \LaTeX{}
-users can choose between two style files:
-\verb+nips15submit_09.sty+ (to be used with \LaTeX{} version 2.09) and
-\verb+nips15submit_e.sty+ (to be used with \LaTeX{}2e). The file
-\verb+nips2015.tex+ may be used as a ``shell'' for writing your paper. All you
-have to do is replace the author, title, abstract, and text of the paper with
-your own. The file
-\verb+nips2015.rtf+ is provided as a shell for MS Word users.
+Since the data sets used by~\citet{saad2009recognizing} and~\citet{paulraj2009color} were not publicly available, we decided to create on our own data set. Controlling for lighting, background and camera (Canon S90), we took pictures of banana and various non-banana objects. After the pictures were taken, we incorporated each picture at $0\,^{\circ}$, $90\,^{\circ}$, $180\,^{\circ}$ and  $270\,^{\circ}$ of rotation to increase the number of pictures in the data set by four fold. Also, there were equal number of pictures for each of the four labels: unripe banana, ripe banana, overripe banana and non-banana. For the banana data set, twelve unique bananas were used. We used apples, tomatos, lemons, limes, mushrooms, broccolis, potatos, pears and green peppers as non-banana objects. In total, there were 928 images generated for the data set and sample pictures of this data set are shown in Figure~\ref{fig:sampleDataset}. After obtaining the data set, we used various Python scripts to standardize the images so that each one is resized and cropped to $256\times 256$ pixels. Furthermore, each picture is decomposed into the RGB channels for features extraction. 
 
-The formatting instructions contained in these style files are summarized in
-sections \ref{gen_inst}, \ref{headings}, and \ref{others} below.
-
-%% \subsection{Keywords for paper submission}
-%% Your NIPS paper can be submitted with any of the following keywords (more than one keyword is possible for each paper):
-
-%% \begin{verbatim}
-%% Bioinformatics
-%% Biological Vision
-%% Brain Imaging and Brain Computer Interfacing
-%% Clustering
-%% Cognitive Science
-%% Control and Reinforcement Learning
-%% Dimensionality Reduction and Manifolds
-%% Feature Selection
-%% Gaussian Processes
-%% Graphical Models
-%% Hardware Technologies
-%% Kernels
-%% Learning Theory
-%% Machine Vision
-%% Margins and Boosting
-%% Neural Networks
-%% Neuroscience
-%% Other Algorithms and Architectures
-%% Other Applications
-%% Semi-supervised Learning
-%% Speech and Signal Processing
-%% Text and Language Applications
-
-%% \end{verbatim}
-
-\section{General formatting instructions}
-\label{gen_inst}
-
-The text must be confined within a rectangle 5.5~inches (33~picas) wide and
-9~inches (54~picas) long. The left margin is 1.5~inch (9~picas).
-Use 10~point type with a vertical spacing of 11~points. Times New Roman is the
-preferred typeface throughout. Paragraphs are separated by 1/2~line space,
-with no indentation.
-
-Paper title is 17~point, initial caps/lower case, bold, centered between
-2~horizontal rules. Top rule is 4~points thick and bottom rule is 1~point
-thick. Allow 1/4~inch space above and below title to rules. All pages should
-start at 1~inch (6~picas) from the top of the page.
-
-%The version of the paper submitted for review should have ``Anonymous Author(s)'' as the author of the paper.
-
-For the final version, authors' names are
-set in boldface, and each name is centered above the corresponding
-address. The lead author's name is to be listed first (left-most), and
-the co-authors' names (if different address) are set to follow. If
-there is only one co-author, list both author and co-author side by side.
-
-Please pay special attention to the instructions in section \ref{others}
-regarding figures, tables, acknowledgments, and references.
-
-\section{Headings: first level}
-\label{headings}
-
-First level headings are lower case (except for first word and proper nouns),
-flush left, bold and in point size 12. One line space before the first level
-heading and 1/2~line space after the first level heading.
-
-\subsection{Headings: second level}
-
-Second level headings are lower case (except for first word and proper nouns),
-flush left, bold and in point size 10. One line space before the second level
-heading and 1/2~line space after the second level heading.
-
-\subsubsection{Headings: third level}
-
-Third level headings are lower case (except for first word and proper nouns),
-flush left, bold and in point size 10. One line space before the third level
-heading and 1/2~line space after the third level heading.
-
-\section{Citations, figures, tables, references}
-\label{others}
-
-These instructions apply to everyone, regardless of the formatter being used.
-
-\subsection{Citations within the text}
-
-Citations within the text should be numbered consecutively. The corresponding
-number is to appear enclosed in square brackets, such as [1] or [2]-[5]. The
-corresponding references are to be listed in the same order at the end of the
-paper, in the \textbf{References} section. (Note: the standard
-\textsc{Bib\TeX} style \texttt{unsrt} produces this.) As to the format of the
-references themselves, any style is acceptable as long as it is used
-consistently.
-
-As submission is double blind, refer to your own published work in the 
-third person. That is, use ``In the previous work of Jones et al.\ [4]'',
-not ``In our previous work [4]''. If you cite your other papers that
-are not widely available (e.g.\ a journal paper under review), use
-anonymous author names in the citation, e.g.\ an author of the
-form ``A.\ Anonymous''. 
-
-
-\subsection{Footnotes}
-
-Indicate footnotes with a number\footnote{Sample of the first footnote} in the
-text. Place the footnotes at the bottom of the page on which they appear.
-Precede the footnote with a horizontal rule of 2~inches
-(12~picas).\footnote{Sample of the second footnote}
-
-\subsection{Figures}
-
-All artwork must be neat, clean, and legible. Lines should be dark
-enough for purposes of reproduction; art work should not be
-hand-drawn. The figure number and caption always appear after the
-figure. Place one line space before the figure caption, and one line
-space after the figure. The figure caption is lower case (except for
-first word and proper nouns); figures are numbered consecutively.
-
-Make sure the figure caption does not get separated from the figure.
-Leave sufficient space to avoid splitting the figure and figure caption.
-
-You may use color figures. 
-However, it is best for the
-figure captions and the paper body to make sense if the paper is printed
-either in black/white or in color.
 \begin{figure}[h]
-\begin{center}
-%\framebox[4.0in]{$\;$}
-\fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
-\end{center}
-\caption{Sample figure caption.}
+ %%%%%% unripe %%%%%%%%%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{1_1.jpg}
+\end{subfigure}%
+ \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{1_2.jpg}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{1_3.jpg}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{1_4.jpg}
+\end{subfigure}\, %%%%%% ripe %%%%%%%%%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{2_1.jpg}
+\end{subfigure}%
+ \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{2_2.jpg}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{2_3.jpg}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{2_4.jpg}
+\end{subfigure}%
+\vskip .05in
+ %%%%%% overripe %%%%%%%%%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{0_1.jpg}
+\end{subfigure}%
+ \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{0_2.jpg}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{0_3.jpg}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{0_4.jpg}
+\end{subfigure}\,
+ %%%%%% non banana %%%%%%%%%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{3_1.jpg}
+\end{subfigure}%
+ \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{3_5.jpg}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{3_17.jpg}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{3_13.jpg}
+\end{subfigure}%
+\caption{Upper left: unripe bananas. Upper right: ripe bananas. Lower left: overripe bananas. Lower Right: non-banana objects.}
+\label{fig:sampleDataset}
 \end{figure}
 
-\subsection{Tables}
+ 
+\subsection{Features Extraction via AlexNet}
+\begin{itemize}
+  \item Caffe~\citep{jia2014caffe}: deep learning framework for using AlexNet. 
+\item AlexNet: five convolutional layers and three fully connected layers.
 
-All tables must be centered, neat, clean and legible. Do not use hand-drawn
-tables. The table number and title always appear before the table. See
-Table~\ref{sample-table}.
+ \item AlexNet~\citep{krizhevsky2012imagenet}: a pre-trained CNN for features extraction.
 
-Place one line space before the table title, one line space after the table
-title, and one line space after the table. The table title must be lower case
-(except for first word and proper nouns); tables are numbered consecutively.
+\item Originally trained to classify images for the ILSVRC-2012 challenge. 
+\item Extract representation of data set from last three layers (FC6, FC7 and FC8). 
+\item Internal representations at these layers are vectors of length 4096 (FC6, FC7) or 1000 (FC8). 
+\end{itemize}
 
-\begin{table}[t]
-\caption{Sample table title}
-\label{sample-table}
-\begin{center}
-\begin{tabular}{ll}
-\multicolumn{1}{c}{\bf PART}  &\multicolumn{1}{c}{\bf DESCRIPTION}
-\\ \hline \\
-Dendrite         &Input terminal \\
-Axon             &Output terminal \\
-Soma             &Cell body (contains cell nucleus) \\
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{alexnet.png}
+\caption{Architechture of AlexNet.}
+\label{fig:alexnet}
+\end{figure}
+
+\subsection{Classification}
+ \begin{itemize}
+  \item Each set of four rotated pictures were either in the train or test set. 
+  \item SciKit Learn~\citep{scikit-learn}: a Python library of machine learning algorithms. 
+ \begin{itemize}
+ \item Applied C-Support Vector Classification (\emph{sklenar.svm.svc}) to the extracted features for classification. 
+ \item Linear, RBF, sigmoid and polynomial kernels were compared. 
+ \item Parameters optimization through exhaustive grid search (\emph{sklearn.grid\_search}).
+ \end{itemize}
+ \end{itemize}
+ 
+ \section{Results}
+\begin{itemize}
+\item Tested various kernel methods from SciKit Learn's SVM library.
+\item Experimental results are shown in Tables~\ref{tab:core} and~\ref{tab:banana}
+\end{itemize}
+\begin{table}[h]
+\caption{Overall percentage of correctly classified objects from training and testing of SVM models with various kernels. Features were obtained from FC6, FC7 and FC8 exits of AlexNet. (Lin = linear, RBF = radial basis function, Sig = sigmoid, Poly = polynomial)}
+\label{tab:core}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\hline
+ &  \multicolumn{4}{c|}{Training Results} & \multicolumn{4}{c|}{Testing Results}\\\hline
+&Lin& RBF&Sig&Poly&Lin& RBF&Sig&Poly\\\hline
+FC6&0.942&1.000&0.266&0.911&0.821&0.878&0.218&0.814\\\hline
+FC7&0.876&1.000&0.266&0.872&0.788&0.862&0.218&0.804\\\hline
+FC8&0.768&0.998&0.266&0.807&0.676&0.843&0.278&0.696\\\hline
 \end{tabular}
-\end{center}
 \end{table}
 
-\section{Final instructions}
-Do not change any aspects of the formatting parameters in the style files.
-In particular, do not modify the width or length of the rectangle the text
-should fit into, and do not change font sizes (except perhaps in the
-\textbf{References} section; see below). Please note that pages should be
-numbered.
-
-\section{Preparing PostScript or PDF files}
-
-Please prepare PostScript or PDF files with paper size ``US Letter'', and
-not, for example, ``A4''. The -t
-letter option on dvips will produce US Letter files.
-
-Fonts were the main cause of problems in the past years. Your PDF file must
-only contain Type 1 or Embedded TrueType fonts. Here are a few instructions
-to achieve this.
+\begin{table}[h]
+\centering
+\caption{Percentage of objects correctly classified based on banana, ripeness and non-banana objects. Features were obtained from FC6, FC7 and FC8 exits of AlexNet. (Lin = linear, RBF = radial basis function, Sig = sigmoid, Poly = polynomial)}
+\label{tab:banana}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}\hline
+ &  \multicolumn{4}{c|}{Banana as Banana} & \multicolumn{4}{c|}{Ripeness}& \multicolumn{4}{c|}{Object as Object}\\\hline
+&Lin& RBF&Sig&Poly&Lin& RBF&Sig&Poly&Lin& RBF&Sig&Poly\\\hline
+FC6&0.946&0.953&1.000&0.958&0.862&0.902&0.288&0.885&0.829&0.934&0.000&0.711\\\hline
+FC7&0.924&0.945&1.000&0.932&0.885&0.901&0.288&0.895&0.697&0.882&0.000&0.711\\\hline
+FC8&0.864&0.924&1.000&0.877&0.804&0.890&0.2880&0.826&0.618&0.908&0.000&0.605\\\hline
+\end{tabular}
+\end{table}
 
 \begin{itemize}
-
-\item You can check which fonts a PDF files uses.  In Acrobat Reader,
-select the menu Files$>$Document Properties$>$Fonts and select Show All Fonts. You can
-also use the program \verb+pdffonts+ which comes with \verb+xpdf+ and is
-available out-of-the-box on most Linux machines.
-
-\item The IEEE has recommendations for generating PDF files whose fonts
-are also acceptable for NIPS. Please see
-\url{http://www.emfield.org/icuwb2010/downloads/IEEE-PDF-SpecV32.pdf}
-
-\item LaTeX users:
-
+\item (RBF, FC6)  outperformed all other classifiers with 100.0\% accuracy in training and 87.8\% accuracy in testing.
+\item (RBF, FC6) improved the performance of~\citet{saad2009recognizing} in classifying banana ripeness with significantly larger data set.
+\item Sigmoid kernel classified every object as banana; 100\% accuracy in classifying banana but 100\% error on all non-banana objects.
+\end{itemize}
+\section{Conclusion and Future Work}
 \begin{itemize}
-
-\item Consider directly generating PDF files using \verb+pdflatex+
-(especially if you are a MiKTeX user). 
-PDF figures must be substituted for EPS figures, however.
-
-\item Otherwise, please generate your PostScript and PDF files with the following commands:
-\begin{verbatim} 
-dvips mypaper.dvi -t letter -Ppdf -G0 -o mypaper.ps
-ps2pdf mypaper.ps mypaper.pdf
-\end{verbatim}
-
-Check that the PDF files only contains Type 1 fonts. 
-%For the final version, please send us both the Postscript file and
-%the PDF file. 
-
-\item xfig "patterned" shapes are implemented with 
-bitmap fonts.  Use "solid" shapes instead. 
-\item The \verb+\bbold+ package almost always uses bitmap
-fonts.  You can try the equivalent AMS Fonts with command
-\begin{verbatim}
-\usepackage[psamsfonts]{amssymb}
-\end{verbatim}
- or use the following workaround for reals, natural and complex: 
-\begin{verbatim}
-\newcommand{\RR}{I\!\!R} %real numbers
-\newcommand{\Nat}{I\!\!N} %natural numbers 
-\newcommand{\CC}{I\!\!\!\!C} %complex numbers
-\end{verbatim}
-
-\item Sometimes the problematic fonts are used in figures
-included in LaTeX files. The ghostscript program \verb+eps2eps+ is the simplest
-way to clean such figures. For black and white figures, slightly better
-results can be achieved with program \verb+potrace+.
+\item Successfully enhanced previous work by adding non-banana objects. 
+\item Future: generalize ripeness detection to other fruits and vegetables. 
+\item Industrial application: automatic large scale sorting. 
+\item Mobile app for visually disabled: find the ripeness of fruits and vegetables via phone camera. 
+\item Code and data set available at \href{bit.ly/BananaRipe}{bit.ly/BananaRipe}
 \end{itemize}
-\item MSWord and Windows users (via PDF file):
-\begin{itemize}
-\item Install the Microsoft Save as PDF Office 2007 Add-in from
-\url{http://www.microsoft.com/downloads/details.aspx?displaylang=en\&familyid=4d951911-3e7e-4ae6-b059-a2e79ed87041}
-\item Select ``Save or Publish to PDF'' from the Office or File menu
-\end{itemize}
-\item MSWord and Mac OS X users (via PDF file):
-\begin{itemize}
-\item From the print menu, click the PDF drop-down box, and select ``Save
-as PDF...''
-\end{itemize}
-\item MSWord and Windows users (via PS file):
-\begin{itemize}
-\item To create a new printer
-on your computer, install the AdobePS printer driver and the Adobe Distiller PPD file from
-\url{http://www.adobe.com/support/downloads/detail.jsp?ftpID=204} {\it Note:} You must reboot your PC after installing the
-AdobePS driver for it to take effect.
-\item To produce the ps file, select ``Print'' from the MS app, choose
-the installed AdobePS printer, click on ``Properties'', click on ``Advanced.''
-\item Set ``TrueType Font'' to be ``Download as Softfont''
-\item Open the ``PostScript Options'' folder
-\item Select ``PostScript Output Option'' to be ``Optimize for Portability''
-\item Select ``TrueType Font Download Option'' to be ``Outline''
-\item Select ``Send PostScript Error Handler'' to be ``No''
-\item Click ``OK'' three times, print your file.
-\item Now, use Adobe Acrobat Distiller or ps2pdf to create a PDF file from
-the PS file. In Acrobat, check the option ``Embed all fonts'' if
-applicable.
-\end{itemize}
-
-\end{itemize}
-If your file contains Type 3 fonts or non embedded TrueType fonts, we will
-ask you to fix it. 
-
-\subsection{Margins in LaTeX}
- 
-Most of the margin problems come from figures positioned by hand using
-\verb+\special+ or other commands. We suggest using the command
-\verb+\includegraphics+
-from the graphicx package. Always specify the figure width as a multiple of
-the line width as in the example below using .eps graphics
-\begin{verbatim}
-   \usepackage[dvips]{graphicx} ... 
-   \includegraphics[width=0.8\linewidth]{myfile.eps} 
-\end{verbatim}
-or % Apr 2009 addition
-\begin{verbatim}
-   \usepackage[pdftex]{graphicx} ... 
-   \includegraphics[width=0.8\linewidth]{myfile.pdf} 
-\end{verbatim}
-for .pdf graphics. 
-See section 4.4 in the graphics bundle documentation (\url{http://www.ctan.org/tex-archive/macros/latex/required/graphics/grfguide.ps}) 
- 
-A number of width problems arise when LaTeX cannot properly hyphenate a
-line. Please give LaTeX hyphenation hints using the \verb+\-+ command.
-
 
 \subsubsection*{Acknowledgments}
-
-Use unnumbered third level headings for the acknowledgments. All
-acknowledgments go at the end of the paper. Do not include 
-acknowledgments in the anonymized submission, only in the 
-final paper. 
-
+We thank our TA Zhiwei (Lucas) Deng for his guidance on using Caffe as well as AlexNet and Dr. Mori for his insights on solving this problem. 
+ 
+\renewcommand\refname{\vskip -.75cm}
 \subsubsection*{References}
 
-References follow the acknowledgments. Use unnumbered third level heading for
-the references. Any choice of citation style is acceptable as long as you are
-consistent. It is permissible to reduce the font size to `small' (9-point) 
-when listing the references. {\bf Remember that this year you can use
-a ninth page as long as it contains \emph{only} cited references.}
-
-\small{
-[1] Alexander, J.A. \& Mozer, M.C. (1995) Template-based algorithms
-for connectionist rule extraction. In G. Tesauro, D. S. Touretzky
-and T.K. Leen (eds.), {\it Advances in Neural Information Processing
-Systems 7}, pp. 609-616. Cambridge, MA: MIT Press.
-
-[2] Bower, J.M. \& Beeman, D. (1995) {\it The Book of GENESIS: Exploring
-Realistic Neural Models with the GEneral NEural SImulation System.}
-New York: TELOS/Springer-Verlag.
-
-[3] Hasselmo, M.E., Schnell, E. \& Barkai, E. (1995) Dynamics of learning
-and recall at excitatory recurrent synapses and cholinergic modulation
-in rat hippocampal region CA3. {\it Journal of Neuroscience}
-{\bf 15}(7):5249-5262.
-}
-
+   \bibliography{report}		    
+   \bibliographystyle{plainnat}
 \end{document}
