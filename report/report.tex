@@ -63,9 +63,9 @@ Instead of odour, we are interested in integrating imaging and deep learning tec
 The ripeness recognition rate for his algorithm is 96\%. However, this model does not distinguish the non-banana from banana and would only predict the ripeness. In this project, our aim was to implement a new method that could firstly detect whether the imported picture contains any banana and secondly detect the ripeness of banana based on the its skin color. Our approach to this issue is to perform feature extraction of images by using convolutional neural networks and constructing support vector machine classification model that could classify an object by detecting whether it is banana or non-banana and recognize the ripeness, if it is a banana. This model could be very helpful in helping disabled people to detect the ripeness of bananas. In addition, it could become handy in industry for large scale sorting. 
 \section {Background}
 \begin{itemize}
-\item literuatre review on fruit ripeness
+\item literature review on fruit ripeness
 \item literature review on neural network, deep learning, AlexNet
-\item introduction to technolgies used (Caffe, ScikitLearn)
+\item introduction to technologies used (Caffe, ScikitLearn)
 \end{itemize}
 \section{Methodology}
 For this project, we created our own data set on banana and non-banana objects because the previous data sets from~\citet{saad2009recognizing} and~\citet{paulraj2009color} were not available. After establishing our own data set, we extracted the features of the images using a pre-trained convolution neural network. The Caffe deep learning frame work by~\citet{jia2014caffe} allowed us to access from many existing models. Given that we have a visualization task with different types of objects, we chose AlexNet by~\citet{krizhevsky2012imagenet} to extract the features. After obtaining the features of the images, we used the SVM library provided in SciKit Learn~\citep{scikit-learn} to classify the objects. A workflow of this project is shown as a flowchart in Figure~\ref{fig:flowchart}. In this section, we will discuss the details in each step of our work. 
