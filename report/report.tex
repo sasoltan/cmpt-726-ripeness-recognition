@@ -215,21 +215,6 @@ Using this pre-trained CNN, we extracted the internal representation of the data
 \label{fig:alexnet}
 \end{figure}
 
-\subsection{Classification}
-\label{sec:classification}
- \begin{itemize}
-  \item Each set of four rotated pictures were either in the train or test set. 
-  \item SciKit Learn~\citep{scikit-learn}: a Python library of machine learning algorithms. 
- \begin{itemize}
- \item Applied C-Support Vector Classification (\emph{sklenar.svm.svc}) to the extracted features for classification. 
- \item Linear, RBF, sigmoid and polynomial kernels were compared. 
- \item Parameters optimization through exhaustive grid search (\emph{sklearn.grid\_search}).
- \item optimized method based on training set
- \item cross-validation is built into the scikit learn grid search
- \item make sure people know that all the results come from one run. 
- \end{itemize}
- \end{itemize}
-
 \section{Classification}
 
 The format of the features extracted from an image using the CNN is a vector of length 4096 or 1000. Since each object is now a vector, we can use a traditional classification approach, for example Support Vector Machines (SVM). C-Support vector classification (C-SVC)~\citep{Boser et al., 1992} ~\citep{ Vapnik, 1995} is a form of SVM that includes a penalty on the error term. In this model, the C parameter is added to prevent misclassification in the training set. A large value for C will result in a smaller-margin hyperplane and eventually better classification. On the other hand, a small value of C could lead to misclassified sets, even if the training data is linearly separable. This algorithm also allows the use of kernel functions.
