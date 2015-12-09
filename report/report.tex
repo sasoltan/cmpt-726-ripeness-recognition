@@ -60,7 +60,9 @@ Traditionally, humans detect ripeness of fruit  through sight, odour, taste and 
 
 Instead of odour, we are interested in integrating imaging and deep learning techniques to classify the ripeness of bananas. Based on reviews by~\citet{dadwal2012color} and~\citet{kodagali2012computer}, typical computer vision based ripeness detection methods are based on histogram matching or image segmentation. For example,~\citet{paulraj2009color} proposed a histogram-based neural network classifier for evaluating ripeness banana. Each image in the data set is decomposed into its RGB component and the number of pixels in each channel of varying intensities were counted. This information is then vectorized and fed into an neural network to be classified as unripe, ripe, or overripe. Segmentation based methods build on top of histogram-based methods. As mentioned in~\citet{dadwal2012color}, images are preprocessed so that the fruits in the picture are separated from the rest of the image. Then, classifying techniques, such as histogram-based neural network or clustering, are applied to classifying the ripeness. Segmentation based techniques are theoretically superior because features used for classification are only extracted from the relevant segmented region. 
 
-With the works we have reviewed, the models only classify ripeness of fruits. In application, it is likely that there are other objects aside from the fruits on interest. Therefore, our first goal for this project is to implement a new method that could detect the ripeness of bananas. Secondly, our model should be able to differentiate between banana and non-banana objects. Because the data sets from~\citet{paulraj2009color} is not available, our first task Instead of using histogram or segmentation based methods, we will use convolutional neural network to extract features  and constructing support vector machine classification model that could classify an object by detecting whether it is banana or non-banana and recognize the ripeness, if it is a banana. This model could be very helpful in helping disabled people to detect the ripeness of bananas. In addition, it could become handy in industry for large scale sorting. 
+With the works we have reviewed, the models only classify ripeness of fruits. In application, it is likely that there are other objects aside from the fruits on interest. Therefore, our first goal for this project is to implement a new method that could detect the ripeness of bananas. Secondly, our model will differentiate between banana and non-banana objects. Because the data sets from~\citet{paulraj2009color} is not available, our initial task is to create an appropriate data set. Then, instead of using histogram or segmentation based methods, we will use convolutional neural network (CNN) to extract features. With the features of each image at hand, we construct support vector machine (SVM) classification model to classify ripeness and whether the object in question is a banana. 
+
+The remainder of this paper is organized as follows. In section~\ref{sec:method}, we detail the steps in data generation, features extraction and label classification. The results from our experiment are discussed in section~\ref{sec:results} and we conclude the paper with a discussion on our results and future work in section~\ref{sec:conclusion}. 
 
 \begin{comment}
 \section {Background}
@@ -71,6 +73,7 @@ With the works we have reviewed, the models only classify ripeness of fruits. In
 \end{itemize}
 \end{comment}
 \section{Methodology}
+\label{sec:method}
 For this project, we created our own data set on banana and non-banana objects because the previous data sets from~\citet{saad2009recognizing} and~\citet{paulraj2009color} were not available. After establishing our own data set, we extracted the features of the images using a pre-trained convolution neural network. The Caffe deep learning frame work by~\citet{jia2014caffe} allowed us to access from many existing models. Given that we have a visualization task with different types of objects, we chose AlexNet by~\citet{krizhevsky2012imagenet} to extract the features. After obtaining the features of the images, we used the SVM library provided in SciKit Learn~\citep{scikit-learn} to classify the objects. A workflow of this project is shown as a flowchart in Figure~\ref{fig:flowchart}. In this section, we will discuss the details in each step of our work. 
 
 \tikzstyle{block} = [rectangle, draw, fill=SFUred!20, 
@@ -194,17 +197,12 @@ Since the data sets used by~\citet{saad2009recognizing} and~\citet{paulraj2009co
 
  
 \subsection{Features Extraction via AlexNet}
-\begin{itemize}
-  \item Caffe~\citep{jia2014caffe}: deep learning framework for using AlexNet. 
-\item AlexNet: five convolutional layers and three fully connected layers.
 
- \item AlexNet~\citep{krizhevsky2012imagenet}: a pre-trained CNN for features extraction.
+Features extraction is a challenging endeavor in image processing. Fortunately, there are a number of readily available algorithms for this purpose. Instead of building and training a model for features extraction from scratch, we installed Caffe, a deep learning framework developed by~\citet{jia2014caffe}, to assist us. We chose this platform because there exists many feature extraction models in the associated ``model zoo'' to choose from. 
 
-\item Originally trained to classify images for the ILSVRC-2012 challenge. 
-\item Extract representation of data set from last three layers (FC6, FC7 and FC8). 
-\item Internal representations at these layers are vectors of length 4096 (FC6, FC7) or 1000 (FC8). 
-\end{itemize}
+From the many models availabe, we chose AlexNet developed by~\citet{krizhevsky2012imagenet} to extract features from our data set. Originally, this model was trained on 1.2 million high resolution images from the LSVRC-2010 training set. These images were initially labeled into 1000 different categories manually. As shown in Figure~\ref{fig:alexnet}, the CNN is a highly connected structure. This model consists of five convolutional layers and three fully connected layers and each layer could perform feature extraction and classification. Given its first place performance in ILSVRC-2012 in extracting features and classifying images, this model is an appropriate choice for our project.  
 
+Using this pre-trained CNN, we extracted representation of the data set from the last three layers: FC6, FC7 and FC8. Internal representation of the first two layers are vectors of length 4096 and for FC8 is a vector of length1000.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{alexnet.png}
@@ -224,6 +222,7 @@ Since the data sets used by~\citet{saad2009recognizing} and~\citet{paulraj2009co
  \end{itemize}
  
  \section{Results}
+ \label{sec:results}
 \begin{itemize}
 \item Tested various kernel methods from SciKit Learn's SVM library.
 \item Experimental results are shown in Tables~\ref{tab:core} and~\ref{tab:banana}
@@ -260,6 +259,8 @@ FC8&0.864&0.924&1.000&0.877&0.804&0.890&0.2880&0.826&0.618&0.908&0.000&0.605\\\h
 \item Sigmoid kernel classified every object as banana; 100\% accuracy in classifying banana but 100\% error on all non-banana objects.
 \end{itemize}
 \section{Conclusion and Future Work}
+\label{sec:conclusion}
+. This model could be very helpful in helping disabled people to detect the ripeness of bananas. In addition, it could become handy in industry for large scale sorting. 
 \begin{itemize}
 \item Successfully enhanced previous work by adding non-banana objects. 
 \item Future: generalize ripeness detection to other fruits and vegetables. 
