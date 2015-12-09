@@ -3,11 +3,12 @@
 \usepackage{nips15submit_e,times}
 \usepackage{hyperref}
 \usepackage{verbatim}\usepackage{url}
-\usepackage{natbib}
+\usepackage[numbers]{natbib}
 \usepackage[labelformat=simple]{subcaption}
 \renewcommand\thesubfigure{(\alph{subfigure})}
 \usepackage{multirow}
-\usepackage{pgfplots, graphicx, amsmath,amsthm,amssymb,mathtools,   natbib,tikz}
+\usepackage{pgfplots, graphicx, amsmath,amsthm,amssymb,mathtools,tikz}
+
 \usetikzlibrary{arrows.meta, shadows, arrows, positioning}
 %\usepackage{color}
 
@@ -56,7 +57,7 @@ Simon Fraser University\\
 \maketitle
 
 \begin{abstract}
-In this paper, a new technique to detect the banana and its ripeness is introduced. This paper includes the methods and experiments that were implemented in the project. Some of the techniques that were used in this project includes classifying images by support vector machines in linear, radial basis functions and sigmoid functions. Also, we explain the optimization methods that used to improve the accuracy and decrease the number of features.\end{abstract}
+Automatic fruit ripeness detection through machine learning techniques is an active and widely applicable research topic. In this paper, a new technique to detect banana ripeness and non-banana objects is introduced. First, an appropriate data set on bananas was generated under controlled conditions. Instead of histogram or segmentation based methods, we use AlexNet, a convolution neural network model supported by Caffe, to extract features. Through the extracted features, support vector classifiers with various kernels, such as linear, raida basis functions, sigmoid and polynomial,  were used to classify the different objects. Features extracted from different exit points of AlexNet were also considered in the experiment. Overall, the combination of features extracted from FC6 and support vector classifier with radial basis function kernel provided the best results. In strictly classifying the ripeness of bananas, this combination has 90.2\% accuracy in testing. \end{abstract}
 
 \section{Introduction}
 
@@ -203,9 +204,9 @@ Since the data sets used by~\citet{saad2009recognizing} and~\citet{paulraj2009co
  
 \subsection{Features Extraction via AlexNet}
 
-To better classify the images a convolutional neural networks was used to extract features from the images, from which other classification methods would later be used. CNNs are neural networks in which each neuron in a layer is connected to a small, adjacent portion of the previous layer. These adjacent portions overlap, so each neuron on the previous layer is connected to multiple neurons on the next, but significantly less than if the layers were fully connected. AlexNet~\citet{krizhevsky2012imagenet} is a convolutional neural network that was developed for image classification. It was trained on 1.2 million high resolution images from a subset of the images from the LSVRC-2010 and LSRVC-2012 competitions, achieving a score that beat the previous LSVRC-2010 champion. Figure~\ref{fig:alexnet} shows the structure of AlexNet. AlexNet has 5 convolutional layers, several of which have are connected through max-pooling layers (where a layer is segmented and the max value for each segment is taken), and finally has 3 fully connected layers. We chose to use AlexNet because it was designed for image classification and because of it's high accuracy in the LSVRC-2010 challenge.
+To better classify the images, a CNN was used to extract features from the images so that other classification methods would later be used. CNNs are neural networks in which each neuron in a layer is connected to a small, adjacent portion of the previous layer. These adjacent portions overlap, so each neuron on the previous layer is connected to multiple neurons on the next, but significantly less than if the layers were fully connected. AlexNet by~\citet{krizhevsky2012imagenet} is a CNN that was developed for image classification. It was trained on 1.2 million high resolution images from a subset of the images from the LSVRC-2010 and LSRVC-2012 competitions. It achieved a score that outscored the previous LSVRC-2010 champion. Figure~\ref{fig:alexnet} shows the structure of AlexNet. This CNN has five convolutional layers and three fully connected layers. Of the five convolutional layers,  several of which have are connected through max-pooling layers, where a layer is segmented and the max value for each segment is taken. We chose to use AlexNet because it was designed for image classification and its high accuracy in the LSVRC-2010 challenge.
 
-Instead of building and training our own model we decided to look at existing solutions. Caffe is a deep learning framework developed by~\citet{jia2014caffe} to aid in the training and use of neural networks. It has libraries that allow it to be used by a variety of languages, including python, and has a ``model zoo'' that allows pre-trained models to be downloaded and used for feature extraction or as the basis for new networks. A pre-trained model based on AlexNet also exists in the ``model zoo'', which we used.
+Instead of building and training our own model we decided to look at existing solutions. Caffe is a deep learning framework developed by~\citet{jia2014caffe} to aid in the training and use of neural networks. It has libraries that allow it to be used by a variety of languages, including Python, and has a ``model zoo'' that allows pre-trained models to be downloaded and used for feature extraction or as the basis for new networks. For this work, we used an existing model in Caffe's ``model zoo'' that is pre-trained model based on the original AlexNet.
 
 Using this pre-trained CNN, we extracted the internal representation of the data after going through the network from the last three layers: FC6, FC7 and FC8. Layers FC6 and FC7 have 4096 neurons each, so their output is a vector of length 4096. FC8 is similar but has 1000 neurons.
 \begin{figure}[h]
@@ -417,20 +418,14 @@ From the first two rows of Figure~\ref{fig:correctVsIncorrect}, we see that unri
 \caption{Samples of correctly classified data from each class are presented in the first column. For each row, the remaining columns contain samples of incorrectly classified objects that have been given the same label as the object in the first column. }
 \label{fig:correctVsIncorrect}
 \end{figure}
-\begin{itemize}
-\item (RBF, FC6) improved the performance of~\citet{saad2009recognizing} in classifying banana ripeness with significantly larger data set.
-\end{itemize}
 \section{Discussion}
 \label{sec:conclusion}
-. This model could be very helpful in helping disabled people to detect the ripeness of bananas. In addition, it could become handy in industry for large scale sorting. 
-\begin{itemize}
-\item unbalanced set in banana vs objects. 
-\item Successfully enhanced previous work by adding non-banana objects. 
-\item Future: generalize ripeness detection to other fruits and vegetables. 
-\item Industrial application: automatic large scale sorting. 
-\item Mobile app for visually disabled: find the ripeness of fruits and vegetables via phone camera. 
-\item Code and data set available at \href{bit.ly/BananaRipe}{bit.ly/BananaRipe}
-\end{itemize}
+
+Our method outperformed  the performance of~\citet{saad2009recognizing} in classifying banana ripeness with significantly larger data set. In addition to improving the accuracy of classification over previous works, we also added detecting the non-banana objects as an extra feature in this project. 
+
+There are several future directions for this project. Since we used a pre-trained model to extract features from our data set, we can improve the feature extraction process by training the model and fine tuning the parameters of the model. Features extracted from a refined model should provide more representative feature sets that would improve the classification results. 
+
+Aside from simply detecting ripeness of bananas, the core idea of this algorithm could be expanded for ripeness detection for other fruits and vegetables. This project can also be expanded into other environment. We aim to implement this as an application for mobile operating systems. A mobile app that could detect fruit ripeness through computer vision is an useful tool for individuals who have impaired senses. From an industrial point of view, this program could be essential in automatic large scale sorting. The data set used in this project as well as the accompanying code are available at bit.ly/BananaRipe.
 
 \subsubsection*{Acknowledgments}
 We thank our TA Zhiwei (Lucas) Deng and for his guidance on using Caffe as well as AlexNet. We also thank Dr. Mori for his insights on solving this problem. 
