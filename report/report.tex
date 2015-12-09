@@ -1,14 +1,18 @@
 \documentclass{article} % For LaTeX2e
+\usepackage[table]{xcolor}
 \usepackage{nips15submit_e,times}
 \usepackage{hyperref}
 \usepackage{verbatim}\usepackage{url}
 \usepackage{natbib}
 \usepackage[labelformat=simple]{subcaption}
 \renewcommand\thesubfigure{(\alph{subfigure})}
+\usepackage{multirow}
 \usepackage{pgfplots, graphicx, amsmath,amsthm,amssymb,mathtools,   natbib,tikz}
 \usetikzlibrary{arrows.meta, shadows, arrows, positioning}
-\usepackage{color}
+%\usepackage{color}
+
 \definecolor{SFUred} {RGB}{131,33,37}
+
 \title{A Neural Network Approach to Classifying Banana Ripeness}
 
 \author{
@@ -62,7 +66,7 @@ Instead of odour, we are interested in integrating imaging and deep learning tec
 
 With the works we have reviewed, the models only classify ripeness of fruits. In application, it is likely that there are other objects aside from the fruits on interest. Therefore, our first goal for this project is to implement a new method that could detect the ripeness of bananas. Secondly, our model will differentiate between banana and non-banana objects. Because the data sets from~\citet{paulraj2009color} is not available, our initial task is to create an appropriate data set. Then, instead of using histogram or segmentation based methods, we will use convolutional neural network (CNN) to extract features. With the features of each image at hand, we construct support vector machine (SVM) classification model to classify ripeness and whether the object in question is a banana. 
 
-The remainder of this paper is organized as follows. In section~\ref{sec:method}, we detail the steps in data generation, features extraction and label classification. The results from our experiment are discussed in section~\ref{sec:results} and we conclude the paper with a discussion on our results and future work in section~\ref{sec:conclusion}. 
+The remainder of this paper is organized as follows. In Section~\ref{sec:method}, we detail the steps in data generation, features extraction and label classification. The results from our experiment are discussed in Section~\ref{sec:results} and we conclude the paper with a discussion on our results and future work in Section~\ref{sec:conclusion}. 
 
 \begin{comment}
 \section {Background}
@@ -120,9 +124,10 @@ For this project, we created our own data set on banana and non-banana objects b
 
 \subsection{Generating and Preparing the Data set}
 
-Since the data sets used by~\citet{saad2009recognizing} and~\citet{paulraj2009color} were not publicly available, we decided to create on our own data set. Controlling for lighting, background and camera (Canon S90), we took pictures of banana and various non-banana objects. After the pictures were taken, we incorporated each picture at $0\,^{\circ}$, $90\,^{\circ}$, $180\,^{\circ}$ and  $270\,^{\circ}$ of rotation to increase the number of pictures in the data set by four fold. Also, there were equal number of pictures for each of the four labels: unripe banana, ripe banana, overripe banana and non-banana. For the banana data set, twelve unique bananas were used. We used apples, tomatos, lemons, limes, mushrooms, broccolis, potatos, pears and green peppers as non-banana objects. In total, there were 928 images generated for the data set and sample pictures of this data set are shown in Figure~\ref{fig:sampleDataset}. After obtaining the data set, we used various Python scripts to standardize the images so that each one is resized and cropped to $256\times 256$ pixels. Furthermore, each picture is decomposed into the RGB channels for features extraction. 
+Since the data sets used by~\citet{saad2009recognizing} and~\citet{paulraj2009color} were not publicly available, we decided to create on our own data set. Controlling for lighting, background and camera (Canon S90), we took pictures of banana and various non-banana objects. After the pictures were taken, we incorporated each picture at $0\,^{\circ}$, $90\,^{\circ}$, $180\,^{\circ}$ and  $270\,^{\circ}$ of rotation to increase the number of pictures in the data set by four fold. Also, there were equal number of pictures for each of the four labels: unripe banana, ripe banana, overripe banana and non-banana. For the banana data set, twelve unique bananas were used. We used apples, tomatoes, lemons, limes, mushrooms, broccolis, potatoes, pears and green peppers as non-banana objects. In total, there were 928 images generated for the data set and sample pictures of this data set are shown in Figure~\ref{fig:sampleDataset}. After obtaining the data set, we used various Python scripts to standardize the images so that each one is resized and cropped to $256\times 256$ pixels. Furthermore, each picture is decomposed into the RGB channels for features extraction. 
 
 \begin{figure}[h]
+\centering
  %%%%%% unripe %%%%%%%%%
   \begin{subfigure}{.123\textwidth}
   \centering
@@ -211,6 +216,7 @@ Using this pre-trained CNN, we extracted representation of the data set from the
 \end{figure}
 
 \subsection{Classification}
+\label{sec:classification}
  \begin{itemize}
   \item Each set of four rotated pictures were either in the train or test set. 
   \item SciKit Learn~\citep{scikit-learn}: a Python library of machine learning algorithms. 
@@ -218,50 +224,207 @@ Using this pre-trained CNN, we extracted representation of the data set from the
  \item Applied C-Support Vector Classification (\emph{sklenar.svm.svc}) to the extracted features for classification. 
  \item Linear, RBF, sigmoid and polynomial kernels were compared. 
  \item Parameters optimization through exhaustive grid search (\emph{sklearn.grid\_search}).
+ \item optimized method based on training set
+ \item cross-validation is built into the scikit learn grid search
+ \item make sure people know that all the results come from one run. 
  \end{itemize}
  \end{itemize}
  
  \section{Results}
  \label{sec:results}
-\begin{itemize}
-\item Tested various kernel methods from SciKit Learn's SVM library.
-\item Experimental results are shown in Tables~\ref{tab:core} and~\ref{tab:banana}
-\end{itemize}
+As mentioned in Section~\ref{sec:classification}, we applied existing SVM algorithms from SciKit Learn's library to classify the data in our set. For the experiment, we compared the performance of different kernels and feature extraction points from AlexNet. As highlighted in red in Table~\ref{tab:core}, using features extracted from RC6 and RC7 along with the radial basis function kernel both 
+provided 100\% accuracy in training. Testing results were consistent with our training results and the \{FC6, RBF\} pair outperformed all other classifiers at 87.8\% accuracy. Therefore, the remainder of this report focuses on \{FC6, RBF\} as the chosen classifier. 
+
 \begin{table}[h]
-\caption{Overall percentage of correctly classified objects from training and testing of SVM models with various kernels. Features were obtained from FC6, FC7 and FC8 exits of AlexNet. (Lin = linear, RBF = radial basis function, Sig = sigmoid, Poly = polynomial)}
+\caption{Overall accuracy of correctly classified objects from training and testing of SVM models with various kernels. Features were obtained from FC6, FC7 and FC8 exits of AlexNet. (Lin = linear, RBF = radial basis function, Sig = sigmoid, Poly = polynomial)}
 \label{tab:core}
 \centering
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|}\hline
- &  \multicolumn{4}{c|}{Training Results} & \multicolumn{4}{c|}{Testing Results}\\\hline
+ &  \multicolumn{4}{c|}{Training} & \multicolumn{4}{c|}{Testing}\\\hline
 &Lin& RBF&Sig&Poly&Lin& RBF&Sig&Poly\\\hline
-FC6&0.942&1.000&0.266&0.911&0.821&0.878&0.218&0.814\\\hline
-FC7&0.876&1.000&0.266&0.872&0.788&0.862&0.218&0.804\\\hline
+FC6&0.942&\cellcolor{SFUred!25}1.000&0.266&0.911&0.821&\cellcolor{SFUred!25}0.878&0.218&0.814\\\hline
+FC7&0.876&\cellcolor{SFUred!25}1.000&0.266&0.872&0.788&0.862&0.218&0.804\\\hline
 FC8&0.768&0.998&0.266&0.807&0.676&0.843&0.278&0.696\\\hline
 \end{tabular}
 \end{table}
 
+To better understand the performance of the \{FC6, RBF\} classifier, we present the results on specific labels in Tables~\ref{tab:ripenessMatrix} and~\ref{tab:objectMatrix}. As seen in Table~\ref{tab:ripenessMatrix}, there was no confusion between unripe and overripe bananas. All errors in classifying banana centered around ripe bananas. As for the performance of classifying bananas versus other objects, Table~\ref{tab:objectMatrix} shows that there are more objects that are misidentified than bananas misidentified as other objects. 
+
+
+	
 \begin{table}[h]
 \centering
-\caption{Percentage of objects correctly classified based on banana, ripeness and non-banana objects. Features were obtained from FC6, FC7 and FC8 exits of AlexNet. (Lin = linear, RBF = radial basis function, Sig = sigmoid, Poly = polynomial)}
-\label{tab:banana}
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}\hline
- &  \multicolumn{4}{c|}{Banana as Banana} & \multicolumn{4}{c|}{Ripeness}& \multicolumn{4}{c|}{Object as Object}\\\hline
-&Lin& RBF&Sig&Poly&Lin& RBF&Sig&Poly&Lin& RBF&Sig&Poly\\\hline
-FC6&0.946&0.953&1.000&0.958&0.862&0.902&0.288&0.885&0.829&0.934&0.000&0.711\\\hline
-FC7&0.924&0.945&1.000&0.932&0.885&0.901&0.288&0.895&0.697&0.882&0.000&0.711\\\hline
-FC8&0.864&0.924&1.000&0.877&0.804&0.890&0.2880&0.826&0.618&0.908&0.000&0.605\\\hline
+\caption{Confusion matrix on banana ripeness with the \{FC6, RBF\} classifier. }
+\label{tab:ripenessMatrix}
+\begin{tabular}{|c|c|c|c|c|}\hline
+&&\multicolumn{3}{c|}{Predicted}\\\hline
+&&Unripe&Ripe&Overripe\\\hline
+\multirow{3}{*}{Actual}&Unripe&\cellcolor{SFUred!65}0.913&\cellcolor{SFUred!15}0.095&0.000\\\cline{2-5}
+&Ripe&\cellcolor{SFUred!15}0.068&\cellcolor{SFUred!65}0.836&\cellcolor{SFUred!15}0.096\\\cline{2-5}
+&Overripe&0.000&\cellcolor{SFUred!15}0.033&\cellcolor{SFUred!65}0.967\\\hline
 \end{tabular}
 \end{table}
 
+\begin{table}[h]
+\centering
+\caption{Confusion matrix on banana versus other objects with the \{FC6, RBF\} classifier. }
+\label{tab:objectMatrix}
+\begin{tabular}{|c|c|c|c|}\hline
+&&\multicolumn{2}{c|}{Predicted}\\\hline
+&&Banana&Other\\\hline
+\multirow{2}{*}{Actual}&Banana&\cellcolor{SFUred!65}0.953&\cellcolor{SFUred!15}0.046\\\cline{2-4}
+&Other&\cellcolor{SFUred!15}0.066&\cellcolor{SFUred!65}0.934\\\hline
+\end{tabular}
+\end{table}
+
+To better understand the incorrectly classified objects from \{FC6, RBF\}, images of correctly and incorrectly classified objects are shown in Figure~\ref{fig:correctVsIncorrect}. Given the size of the data set, it is impractical to present the entire list of correctly or incorrectly identified objects for each class label in the figure. While we have only shown a selected few of the incorrectly classified objects, they are generally representative of the objects that were misclassified.
+
+From the first two rows of Figure~\ref{fig:correctVsIncorrect}, we see that unripe and ripe bananas are often misclassified as each other. This observation correspond with the results shown in Table~\ref{tab:ripenessMatrix}. Furthermore, from the fourth row of Figure~\ref{fig:correctVsIncorrect}, we see that the objects that are misclassified as non-bananas are mostly overripe bananas. This information cannot be directly obtained from Table~\ref{tab:objectMatrix}.
+
+\begin{figure}[h]
+\centering
+ %%%%%% unripe %%%%%%%%%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/cor_pre.jpg}
+\captionsetup{labelformat=empty}
+\caption{Unripe}
+\end{subfigure}%
+\qquad
+ \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_pre/RIPE_1_PRE_1.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_pre/RIPE_1_PRE_3.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_pre/RIPE_1_PRE_4.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_pre/OTHER_1_PRERIPE_1.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}
+\vskip .1in
+%%%%%% ripe %%%%%%%%%
+ \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/cor_ripe.jpg}
+\captionsetup{labelformat=empty}
+\caption{Ripe}
+\end{subfigure}%
+\qquad
+ \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_ripe/PRE_2_RIPE_1.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_ripe/PRE_2_RIPE_4.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_ripe/PRE_2_RIPE_5.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_ripe/ROTTEN_2_RIPE_2.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}
+\vskip .1in
+ %%%%%% overripe %%%%%%%%%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/cor_rotten.jpg}
+\captionsetup{labelformat=empty}
+\caption{Overripe}
+\end{subfigure}%
+\qquad
+ \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_rotten/OTHER_0_ROTTEN_1.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_rotten/OTHER_0_ROTTEN_2.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_rotten/OTHER_0_ROTTEN_3.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_rotten/RIPE_0_ROTTEN_2.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}
+ \vskip .1in
+ %%%%%% non banana %%%%%%%%%
+ \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/cor_other.jpg}
+\captionsetup{labelformat=empty}
+\caption{Other}
+\end{subfigure}%
+\qquad
+ \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_other/RIPE_3_OTHER_2.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_other/ROTTEN_3_OTHER6.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_other/ROTTEN_3_OTHER_3.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}%
+  \begin{subfigure}{.123\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{../results/q_samples/mis_other/ROTTEN_3_OTHER_6.jpg}
+\captionsetup{labelformat=empty}
+\caption{}
+\end{subfigure}
+\caption{Samples of correctly classified data from each class are presented in the first column. For each row, the remaining columns contain samples of incorrectly classified objects that have been given the same label as the object in the first column. }
+\label{fig:correctVsIncorrect}
+\end{figure}
 \begin{itemize}
-\item (RBF, FC6)  outperformed all other classifiers with 100.0\% accuracy in training and 87.8\% accuracy in testing.
 \item (RBF, FC6) improved the performance of~\citet{saad2009recognizing} in classifying banana ripeness with significantly larger data set.
-\item Sigmoid kernel classified every object as banana; 100\% accuracy in classifying banana but 100\% error on all non-banana objects.
 \end{itemize}
-\section{Conclusion and Future Work}
+\section{Discussion}
 \label{sec:conclusion}
 . This model could be very helpful in helping disabled people to detect the ripeness of bananas. In addition, it could become handy in industry for large scale sorting. 
 \begin{itemize}
+\item unbalanced set in banana vs objects. 
 \item Successfully enhanced previous work by adding non-banana objects. 
 \item Future: generalize ripeness detection to other fruits and vegetables. 
 \item Industrial application: automatic large scale sorting. 
