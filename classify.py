@@ -53,13 +53,13 @@ def get_num_errors(predicted_results, actual_results, filenames=None, print_fail
 
 def optimize_params(training_features, training_target):
     param_grids = [
-        [{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'gamma': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'kernel': ['rbf']}],
-        [{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'kernel': ['linear']}],
-        [{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'gamma': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'kernel': ['sigmoid']}],
-        [{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'gamma': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'degrea': [1, 2], 'kernel': ['poly']}],
+        [{'C': [10, 100, 1000, 10000], 'gamma': [0.1, 1, 10], 'kernel': ['rbf']}],
+        [{'C': [1, 10, 100, 1000, 10000], 'kernel': ['linear']}],
+        [{'C': [0.0001, 0.001, 0.01], 'gamma': [0.0001, 0.001, 0.01], 'kernel': ['sigmoid']}],
+        [{'C': [10, 100, 1000], 'gamma': [0.1, 1, 10], 'degree': [1, 2], 'kernel': ['poly']}],
     ]
     for param_grid in param_grids:
-        clf = grid_search.GridSearchCV(svm.SVC(C=1), param_grid, cv=10, n_jobs=-1, verbose=1,  pre_dispatch=4)
+        clf = grid_search.GridSearchCV(svm.SVC(C=1), param_grid, cv=10, n_jobs=-1, verbose=1,  pre_dispatch=3)
         clf.fit(training_features, training_target)
         print clf.best_params_
     return True
@@ -102,7 +102,7 @@ def main(feature_file, split_file, mode=""):
         return True
         #print "Optimized params: %s" % (str(classification_params))
     else:
-        classification_params = {"C": 100, "gamma": 10.0, "kernel": "poly", "degree": 2}
+        classification_params = {"C": 1000, "gamma": 10, "degree": 2, "kernel": "poly"}
 
     # test data
     test_features, test_targets, test_filenames = [], [], []
