@@ -1,0 +1,44 @@
+kyle@kyle-ThinkPad-X1-Carbon ~/bigdata/cmpt-726-ripeness-recognition $ python classify.py extracted_features/features_fc6.npz split.txt test
+Training: Number of errors: 0. Error rate: 0.000000.
+Percent of bananas correctly classified as a banana: 0.953390
+Percent of bananas classified as banas, percent correctly predicted ripeness: 0.902222
+Percent of other correctly classified as others: 0.934211
+processed_images/0_29_113.jpg 3
+processed_images/0_29_115.jpg 3
+processed_images/0_29_116.jpg 3
+processed_images/0_35_137.jpg 3
+processed_images/0_35_138.jpg 2
+processed_images/0_35_139.jpg 3
+processed_images/0_49_196.jpg 3
+processed_images/0_53_210.jpg 2
+processed_images/0_58_231.jpg 3
+processed_images/0_5_19.jpg 3
+processed_images/1_102_173.jpg 2
+processed_images/1_102_174.jpg 2
+processed_images/1_106_190.jpg 2
+processed_images/1_65_27.jpg 2
+processed_images/1_89_121.jpg 2
+processed_images/1_89_123.jpg 2
+processed_images/1_94_143.jpg 2
+processed_images/1_97_153.jpg 2
+processed_images/2_126_39.jpg 0
+processed_images/2_142_101.jpg 3
+processed_images/2_142_103.jpg 3
+processed_images/2_142_104.jpg 0
+processed_images/2_143_105.jpg 0
+processed_images/2_143_106.jpg 0
+processed_images/2_143_107.jpg 3
+processed_images/2_143_108.jpg 0
+processed_images/2_144_109.jpg 1
+processed_images/2_144_111.jpg 1
+processed_images/2_144_112.jpg 1
+processed_images/2_149_132.jpg 0
+processed_images/2_168_205.jpg 1
+processed_images/2_168_207.jpg 1
+processed_images/2_172_221.jpg 0
+processed_images/3_181_26.jpg 0
+processed_images/3_191_66.jpg 1
+processed_images/3_209_139.jpg 0
+processed_images/3_229_219.jpg 0
+processed_images/3_231_227.jpg 0
+Testing: Number of errors: 38. Error rate: 0.121795.
